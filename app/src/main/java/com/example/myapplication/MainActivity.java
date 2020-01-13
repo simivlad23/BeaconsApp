@@ -108,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
                         android.R.layout.simple_list_item_1, mDeviceList));
                  }
 
+            System.out.println("Ceva");
+            
            // }
         }
     };
