@@ -65,24 +65,24 @@ public class MainActivity extends AppCompatActivity {
 
                 listView.setAdapter(null);
 
-                List<String> itemList = new ArrayList<>();
-                for(BluetoothDevice bt : pairedDevices) {
+//                List<String> itemList = new ArrayList<>();
+//                for(BluetoothDevice bt : pairedDevices) {
+//
+//                    bluetoothGatt =  bt.connectGatt(MainActivity.this, true, gattCallback);
+//                    itemList.add(bt.getName());
+//                    System.out.println("-------------  " + bt.getAddress());
+//                    mDeviceList.add(bt.getName() + "\n" + bt.getAddress() + " RSSI: " + bluetoothGatt);
+//
+//
+//                    ArrayAdapter<String> listAdapter = new ArrayAdapter<>(getApplication().getBaseContext(),
+//                            android.R.layout.simple_list_item_1, mDeviceList);
+//
+//                    listView.setAdapter(listAdapter);
+//
+//                }
 
-                    bluetoothGatt =  bt.connectGatt(MainActivity.this, true, gattCallback);
-                    itemList.add(bt.getName());
-                    System.out.println("-------------  " + bt.getAddress());
-                    mDeviceList.add(bt.getName() + "\n" + bt.getAddress() + " RSSI: " + bluetoothGatt);
-
-
-                    ArrayAdapter<String> listAdapter = new ArrayAdapter<>(getApplication().getBaseContext(),
-                            android.R.layout.simple_list_item_1, mDeviceList);
-
-                    listView.setAdapter(listAdapter);
-
-                }
-
-                //BTAdapter.enable();
-               // BTAdapter.startDiscovery();
+                BTAdapter.enable();
+                BTAdapter.startDiscovery();
 
 
             }
