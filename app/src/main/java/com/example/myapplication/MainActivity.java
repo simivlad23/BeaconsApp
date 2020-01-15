@@ -6,39 +6,27 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothProfile;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
+
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
+import java.util.Set;
+
+
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private BluetoothAdapter BTAdapter = BluetoothAdapter.getDefaultAdapter();
     private ListView listView;
     private ArrayList<String> mDeviceList = new ArrayList<>();
     BluetoothGatt bluetoothGatt;
-    BluetoothLeScanner bluetoothLeScanner;
     private static final String TAG = "BLE-app";
 
     private final double RF_A =40; // the absolute energy which is represent by dBm at a distance of 1 meter from the transmitter
@@ -49,70 +37,28 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        registerReceiver(receiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
         listView = findViewById(R.id.listView);
-
-
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        final ArrayAdapter<String> listAdapter = new ArrayAdapter<>(getApplication().getBaseContext(),
+                android.R.layout.simple_list_item_1, mDeviceList);
 
 
-
+        listView.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, mDeviceList));
         Button buuton = findViewById(R.id.button1);
         buuton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-
                 listView.setAdapter(null);
+                for(BluetoothDevice bt : pairedDevices) {
 
-//                List<String> itemList = new ArrayList<>();
-//                for(BluetoothDevice bt : pairedDevices) {
-//
-//                    bluetoothGatt =  bt.connectGatt(MainActivity.this, true, gattCallback);
-//                    itemList.add(bt.getName());
-//                    System.out.println("-------------  " + bt.getAddress());
-//                    mDeviceList.add(bt.getName() + "\n" + bt.getAddress() + " RSSI: " + bluetoothGatt);
-//
-//
-//                    ArrayAdapter<String> listAdapter = new ArrayAdapter<>(getApplication().getBaseContext(),
-//                            android.R.layout.simple_list_item_1, mDeviceList);
-//
-//                    listView.setAdapter(listAdapter);
-//
-//                }
+                    bluetoothGatt =  bt.connectGatt(MainActivity.this, true, gattCallback);
+                    listView.setAdapter(listAdapter);
 
-                BTAdapter.enable();
-                BTAdapter.startDiscovery();
-
-
+                }
             }
         });
     }
-
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-
-                int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI,Short.MAX_VALUE);
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-              //  if (device.getAddress().equals("30:45:96:48:18:A6")) {
-//                     if (device.getAddress().equals("94:65:2D:D5:94:BD")) {
-                mDeviceList.add(device.getName() + "\n" + device.getAddress() + " RSSI: " + rssi   +"   distance: "+ getDistance(rssi,0.8));
-                Log.i("BT", device.getName() + "\n" + device.getAddress());
-
-                //TODO to print in a csv file rssi value and distance calculated
-                listView.setAdapter(new ArrayAdapter<String>(context,
-                        android.R.layout.simple_list_item_1, mDeviceList));
-                 }
-
-            System.out.println("Ceva");
-
-           // }
-        }
-    };
 
 
     protected BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
@@ -125,10 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED");
                 bluetoothGatt = gatt;
 
-
                 boolean rssiStatus = bluetoothGatt.readRemoteRssi();
-
-
                 boolean discoverServicesOk = gatt.discoverServices();
             }
         }
@@ -137,11 +80,14 @@ public class MainActivity extends AppCompatActivity {
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
 
-//            if(status == BluetoothGatt.GATT_SUCCESS){
-                System.out.println("Rsii "+ rssi);
+           if(status == BluetoothGatt.GATT_SUCCESS){
+
+               //TODO save the rssi values in a file
+
+                mDeviceList.add(gatt.getDevice().getName() + "\n" + gatt.getDevice().getAddress() + " RSSI: " + rssi);
                 Log.d(TAG,String.format("BluetoothGatt ReadRssi [%d]",rssi));
                 Log.i(TAG,"Distance is: "+ getDistance(rssi,1));
-            //}
+            }
         }
     };
 
