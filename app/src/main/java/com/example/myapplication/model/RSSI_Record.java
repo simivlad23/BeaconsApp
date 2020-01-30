@@ -2,12 +2,36 @@ package com.example.myapplication.model;
 
 public class RSSI_Record {
 
+    private String deviceName;
+    private String deviceAddress;
     private double rssiValue;
     private double distanceCalculated;
 
-    public RSSI_Record(double rssiValue, double distanceCalculated) {
+    public RSSI_Record() {
+
+    }
+
+    public RSSI_Record(String deviceName, String deviceAddress, double rssiValue, double distanceCalculated) {
+        this.deviceName = deviceName;
+        this.deviceAddress = deviceAddress;
         this.rssiValue = rssiValue;
         this.distanceCalculated = distanceCalculated;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public String getDeviceAddress() {
+        return deviceAddress;
+    }
+
+    public void setDeviceAddress(String deviceAddress) {
+        this.deviceAddress = deviceAddress;
     }
 
     public double getRssiValue() {
