@@ -14,13 +14,12 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TabHost;
 
 import java.util.ArrayList;
 
 import java.util.Set;
-
-
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -73,11 +72,23 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED");
                 bluetoothGatt = gatt;
 
-                boolean rssiStatus = bluetoothGatt.readRemoteRssi();
+                timier = new Timer();
+                timier.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        boolean rssiStatus = bluetoothGatt.readRemoteRssi();
+                    }
+                },0,500);
+
                 boolean discoverServicesOk = gatt.discoverServices();
+            } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED");
+                timier.cancel();
+                timier=null;
             }
         }
 
+        Timer timier;
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
@@ -88,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                //TODO save the rssi values in a file
                 //mDeviceList.add(gatt.getDevice().getName() + "\n" + gatt.getDevice().getAddress() + " RSSI: " + rssi);
                 //listAdapter.notifyDataSetChanged();
+
+
                 Log.d(TAG,String.format("BluetoothGatt ReadRssi from "+ gatt.getDevice().getAddress()+ " value : [%d]  and distance calculated :" + getDistance(rssi,1),rssi));
                 Log.i(TAG,"Distance is: "+ getDistance(rssi,1));
             }
