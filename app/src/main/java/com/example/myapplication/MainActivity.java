@@ -1,41 +1,28 @@
 package com.example.myapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.example.myapplication.model.RSSI_Record;
-import com.opencsv.CSVWriter;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -45,7 +32,6 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     private static final String FILE_NAME = "example2.txt";
-    EditText mEditText;
 
 
     private ListView listView;
@@ -53,10 +39,14 @@ public class MainActivity extends AppCompatActivity {
     BluetoothGatt bluetoothGatt;
     BluetoothGatt bluetoothGatt1;
     BluetoothGatt bluetoothGatt2;
+    BluetoothGatt bluetoothGatt3;
+    BluetoothGatt bluetoothGatt4;
+
     private static final String TAG = "BLE-app";
     BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     ArrayAdapter<String> listAdapter;
     private List<RSSI_Record> records = new ArrayList<>();
+    private List<Beacons> beaconsList = new ArrayList<>();
 
 
     private final double RF_A = 40; // the absolute energy which is represent by dBm at a distance of 1 meter from the transmitter
@@ -83,30 +73,55 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-
-                int i = 0;
-                for (BluetoothDevice bt : pairedDevices) {
-                    if (i == 0) {
-                        bluetoothGatt = bt.connectGatt(MainActivity.this, true, gattCallback);
-                    }
-                    if (i == 1) {
-                        bluetoothGatt1 = bt.connectGatt(MainActivity.this, true, gattCallback1);
-                    }
-                    if (i == 2) {
-                        bluetoothGatt2 = bt.connectGatt(MainActivity.this, true, gattCallback2);
-                    }
-
-                    i++;
+                for(BluetoothDevice bt : pairedDevices){
+                    Beacons beacons = new Beacons(bt,MainActivity.this);
+                    beaconsList.add(beacons);
                 }
+
+//                int i = 0;
+//                for (BluetoothDevice bt : pairedDevices) {
+//
+//                    if (i == 0) {
+//                        bluetoothGatt = bt.connectGatt(MainActivity.this, true, gattCallback);
+//                    }
+//                    if (i == 1) {
+//                        bluetoothGatt1 = bt.connectGatt(MainActivity.this, true, gattCallback1);
+//                    }
+//                    if (i == 2) {
+//                        bluetoothGatt2 = bt.connectGatt(MainActivity.this, true, gattCallback2);
+//                    }
+//                    if (i == 3) {
+//                        bluetoothGatt3 = bt.connectGatt(MainActivity.this, true, gattCallback3);
+//                    }
+//                    if (i == 4) {
+//                        bluetoothGatt4 = bt.connectGatt(MainActivity.this, true, gattCallback4);
+//                    }
+//
+//                    i++;
+//                }
                 listView.setAdapter(listAdapter);
             }
         });
         buttonStopRead.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                bluetoothGatt.close();
-                bluetoothGatt1.close();
-                bluetoothGatt2.close();
+                for(Beacons beacons : beaconsList){
+                    beacons.stopReacording();
+                }
+//                bluetoothGatt.close();
+//                bluetoothGatt.disconnect();
+//
+//                bluetoothGatt1.close();
+//                bluetoothGatt1.disconnect();
+//
+//                bluetoothGatt2.close();
+//                bluetoothGatt2.disconnect();
+//
+//                bluetoothGatt3.close();
+//                bluetoothGatt3.disconnect();
+//
+//                bluetoothGatt4.close();
+//                bluetoothGatt4.disconnect();
                 export();
 
             }
@@ -114,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+
         Timer timier;
 
         @Override
@@ -121,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             super.onConnectionStateChange(gatt, status, newState);
 
             if (newState == BluetoothGatt.STATE_CONNECTED) {
-                Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED");
+                Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED   " + gatt.getDevice().getAddress());
                 bluetoothGatt = gatt;
 
                 timier = new Timer();
@@ -130,11 +146,11 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         boolean rssiStatus = bluetoothGatt.readRemoteRssi();
                     }
-                }, 0, 500);
+                }, 0, 1000);
 
                 boolean discoverServicesOk = gatt.discoverServices();
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED");
+                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED  " + gatt.getDevice().getAddress());
                 timier.cancel();
                 timier = null;
             }
@@ -155,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
                 records.add(new RSSI_Record(deviceName, deviceAddress, rssi, distanceCalculated));
                 Log.d(TAG, String.format("BluetoothGatt ReadRssi from " + gatt.getDevice().getAddress() + " value : [%d]  and distance calculated :" + getDistance(rssi, 1), rssi));
-                Log.i(TAG, "Distance is: " + getDistance(rssi, 1));
+
             }
         }
     };
@@ -168,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             super.onConnectionStateChange(gatt, status, newState);
 
             if (newState == BluetoothGatt.STATE_CONNECTED) {
-                Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED");
+                Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED   " + gatt.getDevice().getAddress());
                 bluetoothGatt1 = gatt;
 
                 timier = new Timer();
@@ -177,11 +193,11 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         boolean rssiStatus = bluetoothGatt1.readRemoteRssi();
                     }
-                }, 0, 500);
+                }, 0, 1000);
 
                 boolean discoverServicesOk = gatt.discoverServices();
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED");
+                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED  " + gatt.getDevice().getAddress());
                 timier.cancel();
                 timier = null;
             }
@@ -207,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
     protected BluetoothGattCallback gattCallback2 = new BluetoothGattCallback() {
         Timer timier;
 
@@ -216,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
             super.onConnectionStateChange(gatt, status, newState);
 
             if (newState == BluetoothGatt.STATE_CONNECTED) {
-                Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED");
+                Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED   " + gatt.getDevice().getAddress());
                 bluetoothGatt2 = gatt;
 
                 timier = new Timer();
@@ -225,11 +240,11 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         boolean rssiStatus = bluetoothGatt2.readRemoteRssi();
                     }
-                }, 0, 500);
+                }, 0, 1000);
 
                 boolean discoverServicesOk = gatt.discoverServices();
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED");
+                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED  " + gatt.getDevice().getAddress());
                 timier.cancel();
                 timier = null;
             }
@@ -250,7 +265,104 @@ public class MainActivity extends AppCompatActivity {
 
                 records.add(new RSSI_Record(deviceName, deviceAddress, rssi, distanceCalculated));
                 Log.d(TAG, String.format("BluetoothGatt ReadRssi from " + gatt.getDevice().getAddress() + " value : [%d]  and distance calculated :" + getDistance(rssi, 1), rssi));
-                Log.i(TAG, "Distance is: " + getDistance(rssi, 1));
+
+            }
+        }
+    };
+
+    protected BluetoothGattCallback gattCallback3 = new BluetoothGattCallback() {
+        Timer timier;
+
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            super.onConnectionStateChange(gatt, status, newState);
+
+            if (newState == BluetoothGatt.STATE_CONNECTED) {
+                Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED   " + gatt.getDevice().getAddress());
+                bluetoothGatt3 = gatt;
+
+                timier = new Timer();
+                timier.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        boolean rssiStatus = bluetoothGatt3.readRemoteRssi();
+                    }
+                }, 0, 1000);
+
+                boolean discoverServicesOk = gatt.discoverServices();
+            } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED  " + gatt.getDevice().getAddress());
+                timier.cancel();
+                timier = null;
+            }
+        }
+
+
+        @Override
+        public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
+            super.onReadRemoteRssi(gatt, rssi, status);
+
+            Log.d(TAG, "status is " + status);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+
+                String deviceName = gatt.getDevice().getName();
+                String deviceAddress = gatt.getDevice().getAddress();
+                double distanceCalculated = getDistance(rssi, 4);
+
+
+                records.add(new RSSI_Record(deviceName, deviceAddress, rssi, distanceCalculated));
+                Log.d(TAG, String.format("BluetoothGatt ReadRssi from " + gatt.getDevice().getAddress() + " value : [%d]  and distance calculated :" + getDistance(rssi, 1), rssi));
+
+            }
+        }
+    };
+
+    protected BluetoothGattCallback gattCallback4 = new BluetoothGattCallback() {
+        Timer timier;
+
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            super.onConnectionStateChange(gatt, status, newState);
+
+            if (newState == BluetoothGatt.STATE_CONNECTED) {
+                Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED   " + gatt.getDevice().getAddress());
+
+
+                bluetoothGatt4 = gatt;
+
+                timier = new Timer();
+                timier.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        boolean rssiStatus = bluetoothGatt4.readRemoteRssi();
+                    }
+                }, 0, 1000);
+                boolean discoverServicesOk = gatt.discoverServices();
+
+
+            } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED  " + gatt.getDevice().getAddress());
+                timier.cancel();
+                timier = null;
+            }
+        }
+
+
+        @Override
+        public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
+            super.onReadRemoteRssi(gatt, rssi, status);
+
+            Log.d(TAG, "status is " + status);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+
+                String deviceName = gatt.getDevice().getName();
+                String deviceAddress = gatt.getDevice().getAddress();
+                double distanceCalculated = getDistance(rssi, 4);
+
+
+                records.add(new RSSI_Record(deviceName, deviceAddress, rssi, distanceCalculated));
+                Log.d(TAG, String.format("BluetoothGatt ReadRssi from " + gatt.getDevice().getAddress() + " value : [%d]  and distance calculated :" + getDistance(rssi, 1), rssi));
+
             }
         }
     };
@@ -267,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
         StringBuilder data = new StringBuilder();
         data.append("Name,Addres,RSSI");
 
-        for (RSSI_Record record : records) {
+        for (RSSI_Record record : Util.recordsList) {
             data.append("\n" + record.getDeviceName() + "," + record.getDeviceAddress() + "," + String.valueOf(record.getRssiValue()));
         }
 
