@@ -1,17 +1,17 @@
 package com.example.myapplication.model;
 
-public class RSSI_Record {
+public class RssiRecord {
 
     private String deviceName;
     private String deviceAddress;
     private double rssiValue;
     private double distanceCalculated;
 
-    public RSSI_Record() {
+    public RssiRecord() {
 
     }
 
-    public RSSI_Record(String deviceName, String deviceAddress, double rssiValue, double distanceCalculated) {
+    public RssiRecord(String deviceName, String deviceAddress, double rssiValue, double distanceCalculated) {
         this.deviceName = deviceName;
         this.deviceAddress = deviceAddress;
         this.rssiValue = rssiValue;
