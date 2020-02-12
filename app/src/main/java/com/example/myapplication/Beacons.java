@@ -29,7 +29,6 @@ public class Beacons {
         public void onConnectionStateChange(final BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
 
-            Log.i(TAG, "onConnectionStateChange() newSatus  -   " + newState + "  on device " + gatt.getDevice().getAddress());
             if (newState == BluetoothGatt.STATE_CONNECTED) {
                 Log.i(TAG, "onConnectionStateChange() - STATE_CONNECTED   " + gatt.getDevice().getAddress());
                 bluetoothGatt = gatt;
@@ -57,10 +56,10 @@ public class Beacons {
 
                 String deviceName = gatt.getDevice().getName();
                 String deviceAddress = gatt.getDevice().getAddress();
-                double distanceCalculated = Util.getDistance(rssi, 4);
+                double distanceCalculated = Util.getDistance2(rssi, 4);
 
                 Util.recordsList.add(new RssiRecord(deviceName, deviceAddress, rssi, distanceCalculated));
-                Log.d(TAG, String.format("BluetoothGatt ReadRssi from " + gatt.getDevice().getAddress() + " value : [%d]  and distance calculated :" + Util.getDistance(rssi, 1), rssi));
+                Log.d(TAG, String.format("BluetoothGatt ReadRssi from " + gatt.getDevice().getAddress() + " value : [%d]  and distance calculated :" + Util.getDistance2(rssi, 4), rssi));
             }
         }
     };

@@ -2,10 +2,12 @@ package com.example.myapplication;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,6 +23,10 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static android.bluetooth.BluetoothProfile.GATT;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -47,14 +53,19 @@ public class MainActivity extends AppCompatActivity {
 
         Button buttonStartRead = findViewById(R.id.button1);
         Button buttonStopRead = findViewById(R.id.button2);
+        Button buttonNrDevices = findViewById(R.id.button3);
 
         buttonStartRead.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
+
+
                 for(BluetoothDevice bt : pairedDevices){
-                    Beacons beacons = new Beacons(bt,MainActivity.this);
-                    beaconsList.add(beacons);
+                        Beacons beacons = new Beacons(bt, MainActivity.this);
+                        beaconsList.add(beacons);
                 }
+
+                Util.makeTaost("Starting reading", getApplicationContext());
                 listView.setAdapter(listAdapter);
             }
         });
@@ -64,7 +75,18 @@ public class MainActivity extends AppCompatActivity {
                 for(Beacons beacons : beaconsList){
                     beacons.stopReacording();
                 }
-                export();
+                Util.makeTaost("Stop reading", getApplicationContext());
+                //export();
+            }
+        });
+        buttonNrDevices.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+
+                        BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+                        List<BluetoothDevice> connected = manager.getConnectedDevices(GATT);
+                        Log.i("Connected Devices: ", connected.size()+"");
+
             }
         });
     }
