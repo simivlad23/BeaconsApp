@@ -1,21 +1,25 @@
 package com.example.myapplication.model;
 
+import java.util.Date;
+
 public class RssiRecord {
 
     private String deviceName;
     private String deviceAddress;
     private double rssiValue;
     private double distanceCalculated;
+    private Date timeReacord;
 
     public RssiRecord() {
 
     }
 
-    public RssiRecord(String deviceName, String deviceAddress, double rssiValue, double distanceCalculated) {
+    public RssiRecord(String deviceName, String deviceAddress, double rssiValue, double distanceCalculated, Date date) {
         this.deviceName = deviceName;
         this.deviceAddress = deviceAddress;
         this.rssiValue = rssiValue;
         this.distanceCalculated = distanceCalculated;
+        this.timeReacord = date;
     }
 
     public String getDeviceName() {
@@ -48,5 +52,13 @@ public class RssiRecord {
 
     public void setDistanceCalculated(double distanceCalculated) {
         this.distanceCalculated = distanceCalculated;
+    }
+
+    public Date getTimeReacord() {
+        return timeReacord;
+    }
+
+    public void setTimeReacord(Date timeReacord) {
+        this.timeReacord = timeReacord;
     }
 }
