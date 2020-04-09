@@ -5,6 +5,9 @@ public class Position {
     private double lat;
     private double lng;
 
+    public Position() {
+    }
+
     public Position(double lat, double lng) {
         this.lat = lat;
         this.lng = lng;

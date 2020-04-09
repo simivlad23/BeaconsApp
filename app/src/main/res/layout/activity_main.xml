@@ -18,6 +18,8 @@
             android:orientation="vertical"
             tools:ignore="MissingConstraints">
 
+
+
             <Button
                 android:id="@+id/button1"
                 android:layout_width="wrap_content"
@@ -31,6 +33,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="Stop" />
+
+
 
             <Button
                 android:id="@+id/button4"
@@ -52,6 +56,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="Set time reading in 5 sec" />
+
+            <Button
+                android:id="@+id/button6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Get position" />
 
 
             <ListView

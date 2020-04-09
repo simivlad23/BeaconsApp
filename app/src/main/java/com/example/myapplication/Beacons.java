@@ -8,7 +8,9 @@ import android.util.Log;
 
 import com.example.myapplication.model.RssiRecord;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,13 +25,16 @@ public class Beacons {
     private double lat = 0.0;
     private double lng = 0.0;
     private int rssiValue;
-    private double distance;
+    private double distance= 1.0;
+    private List<Double> distances = new ArrayList<>();
 
 
 
     public Beacons(BluetoothDevice bt, Context cnt) {
         this.bluetoothDevice = bt;
         this.context = cnt;
+
+
     }
 
     public void connectToGATT(){
@@ -67,7 +72,7 @@ public class Beacons {
                          boolean rssiReadStatus  = bluetoothGatt.readRemoteRssi();
                          Log.i("STATUS READ ", "Request rssi vale from device "+ bluetoothDevice.getAddress() + "   at time: " + Util.convertFromEpochToDate(0) + "and staus is "+ rssiReadStatus );
                     }
-                },0, 1000);
+                },0, 300);
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
                 Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED  " + gatt.getDevice().getAddress());
                 timier.cancel();
@@ -89,6 +94,8 @@ public class Beacons {
                 Util.recordsList.add(new RssiRecord(deviceName, deviceAddress, rssi, distanceCalculated,date));
                 Log.d(TAG, String.format("BluetoothGatt ReadRssi from " + gatt.getDevice().getAddress() + " value : [%d]  and distance calculated :" + Util.getDistance2(rssi, 4), rssi));
 
+
+                //distances.add(distanceCalculated);
                 distance = distanceCalculated;
                 rssiValue = rssi;
 
@@ -103,6 +110,20 @@ public class Beacons {
         bluetoothGatt.close();
         bluetoothGatt = null;
 
+    }
+
+    public double setAverageBleDistance(){
+
+        double sum = 0.0;
+        for(Double distance : distances)
+        {
+            sum += distance;
+        }
+
+        double average = sum / distances.size();
+        distances.clear();
+        this.distance = average;
+        return average;
     }
 
     public BluetoothGatt getBluetoothGatt() {

@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         Button buttonNrDevices = findViewById(R.id.button3);
         Button buttonStartReading = findViewById(R.id.button4);
         Button buttonSetTimeReading = findViewById(R.id.button5);
+        Button buttongetPosition = findViewById(R.id.button6);
 
         textViewLat = findViewById(R.id.textView3);
         textViewLng = findViewById(R.id.textView5);
@@ -74,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
                     Util.beaconsList.add(beacons);
                 }
 
-
                 final Timer timier = new Timer();
                 timier.scheduleAtFixedRate(new TimerTask() {
                     @Override
@@ -83,46 +83,17 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 mDeviceList.clear();
-
-                                //TODO call the actual position method from Util class
-                                // send the list of beacons and calculet the actual position
-
-
                                 for (Beacons beacons : Util.beaconsList) {
 
                                     mDeviceList.add(beacons.getBluetoothDevice().getAddress() + " rssi: " + beacons.getRssiValue() + "; dis:" + beacons.getDistance());
                                     listAdapter.notifyDataSetChanged();
-
 
                                 }
                             }
                         });
 
                     }
-                }, 500, 500);
-
-                final Timer timier2 = new Timer();
-                timier2.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                               // Position position = Util.calculateActualPosition();
-//                                textViewLat.setText(String.valueOf(position.getLat()));
-//                                textViewLng.setText(String.valueOf(position.getLng()));
-//
-
-                                textViewLat.setText(String.valueOf(0));
-                                textViewLng.setText(String.valueOf(0));
-
-
-                            }
-                        });
-
-                    }
-                }, 4000, 500);
+                }, 500, 300);
 
 
                 Util.makeTaost("Starting reading", getApplicationContext());
@@ -160,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
         buttonSetTimeReading.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -169,6 +141,53 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        buttongetPosition.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Util.setBeaconsPosition();
+
+                final Timer timier2 = new Timer();
+                timier2.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                Position position = Util.calcutate();
+                                //Util.updateBeaconsDistances();
+                                Util.positionsList.add(position);
+
+                            }
+                        });
+
+                    }
+                }, 1500, 1500);
+
+                final Timer timier3 = new Timer();
+                timier2.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                Position position = Util.getMedianPosition();
+                                textViewLat.setText(String.valueOf(position.getLat()));
+                                textViewLng.setText(String.valueOf(position.getLng()));
+
+                            }
+                        });
+
+                    }
+                }, 1600, 1500);
+
+
+            }
+        });
+
+
     }
 
 
