@@ -51,11 +51,11 @@
                 android:text="Connected devices" />
 
             <Button
-                android:id="@+id/button5"
+                android:id="@+id/getLivePositionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="Set time reading in 5 sec" />
+                android:text="Get Live Position" />
 
             <Button
                 android:id="@+id/button6"
@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="20dp"
-            android:text="Actual Position" />
+            android:text="Current Position" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -129,8 +129,6 @@
                 android:layout_height="wrap_content"
                 android:text="TextView" />
         </LinearLayout>
-
-
 
     </LinearLayout>
 

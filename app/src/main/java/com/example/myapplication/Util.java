@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.icu.text.Edits;
 import android.net.wifi.ScanResult;
 import android.util.Log;
@@ -102,16 +103,16 @@ public class Util {
         for (Beacons beacons : beaconsList) {
             switch (beacons.getBluetoothDevice().getAddress()) {
                 case "C7:7E:A2:BD:51:4C":
-                    beacons.setLat(8);
-                    beacons.setLng(0);
+                    beacons.setLat(3);
+                    beacons.setLng(1);
                     break;
                 case "D2:83:6A:5E:AB:F8":
-                    beacons.setLat(0);
-                    beacons.setLng(0);
+                    beacons.setLat(1);
+                    beacons.setLng(1);
                     break;
                 case "D1:A4:D2:15:51:00":
-                    beacons.setLat(0);
-                    beacons.setLng(8);
+                    beacons.setLat(1);
+                    beacons.setLng(3);
                     break;
             }
         }

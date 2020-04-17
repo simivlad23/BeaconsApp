@@ -3,15 +3,12 @@ package com.example.myapplication;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -71,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         Button buttonStopRead = findViewById(R.id.button2);
         Button buttonNrDevices = findViewById(R.id.button3);
         Button buttonStartReading = findViewById(R.id.button4);
-        Button buttonSetTimeReading = findViewById(R.id.button5);
+        Button buttonGetLivePosition = findViewById(R.id.getLivePositionButton);
         Button buttongetPosition = findViewById(R.id.button6);
 
         textViewLat = findViewById(R.id.textView3);
@@ -113,11 +110,11 @@ public class MainActivity extends AppCompatActivity {
                                     listAdapter.notifyDataSetChanged();
 
                                 }
-                                for (ScanResult scanResult : Util.wifiList) {
-                                    int level = scanResult.level;
-                                    mDeviceList.add(scanResult.BSSID + " rssi: " + level + "; dis:" + Util.getDistance2(level,4));
-                                    listAdapter.notifyDataSetChanged();
-                                }
+//                                for (ScanResult scanResult : Util.wifiList) {
+//                                    int level = scanResult.level;
+//                                    mDeviceList.add(scanResult.BSSID + " rssi: " + level + "; dis:" + Util.getDistance2(level,4));
+//                                    listAdapter.notifyDataSetChanged();
+//                                }
                             }
                         });
 
@@ -161,12 +158,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonSetTimeReading.setOnClickListener(new View.OnClickListener() {
+        buttonGetLivePosition.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                Util.initStartDateReading();
-                Util.makeTaost("Time was seting", getApplicationContext());
-
+                Intent myIntent = new Intent(MainActivity.this, LivePosition.class);
+               // myIntent.putExtra("key", value); //Optional parameters
+                MainActivity.this.startActivity(myIntent);
 
             }
         });
