@@ -3,9 +3,13 @@ package com.example.myapplication;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -39,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<String> mDeviceList = new ArrayList<>();
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private WifiManager wifiManager;
+
     private ArrayAdapter<String> listAdapter;
     private TextView textViewLat;
     private TextView textViewLng;
@@ -50,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.listView);
 
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+
+        //wifiManager.startScan();
+        Util.wifiList = wifiManager.getScanResults();
         final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
         listAdapter = new ArrayAdapter<>(this,
@@ -66,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         textViewLat = findViewById(R.id.textView3);
         textViewLng = findViewById(R.id.textView5);
 
+
+
         buttonStartDetect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -74,6 +87,17 @@ public class MainActivity extends AppCompatActivity {
                     beacons.connectToGATT();
                     Util.beaconsList.add(beacons);
                 }
+
+
+                final Timer timerWifi = new Timer();
+                timerWifi.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        wifiManager.startScan();
+                        Util.wifiList= wifiManager.getScanResults();
+                    }
+                },0,300);
+
 
                 final Timer timier = new Timer();
                 timier.scheduleAtFixedRate(new TimerTask() {
@@ -88,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
                                     mDeviceList.add(beacons.getBluetoothDevice().getAddress() + " rssi: " + beacons.getRssiValue() + "; dis:" + beacons.getDistance());
                                     listAdapter.notifyDataSetChanged();
 
+                                }
+                                for (ScanResult scanResult : Util.wifiList) {
+                                    int level = scanResult.level;
+                                    mDeviceList.add(scanResult.BSSID + " rssi: " + level + "; dis:" + Util.getDistance2(level,4));
+                                    listAdapter.notifyDataSetChanged();
                                 }
                             }
                         });
@@ -189,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
 
     public void export() {
         //generate data

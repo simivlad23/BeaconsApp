@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.icu.text.Edits;
+import android.net.wifi.ScanResult;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class Util {
     private static final double RF_N = 2.3; // n is the signal transmission constant
     private static final long FIVE_SECOND_MILISECOND = 10000l;
     public static List<Beacons> beaconsList = new ArrayList<>();
+    public static List<ScanResult> wifiList;
     private static DecimalFormat df = new DecimalFormat("#.000");
     public static List<RssiRecord> recordsList = new ArrayList<>();
     public static List<Position> positionsList = new ArrayList<>();
@@ -40,7 +42,7 @@ public class Util {
     }
 
     public static double getDistance2(int rssi, int txPower) {
-        double distance = Math.pow(10d, ((double) txPower - rssi) / (10 * 2.3)) / 1000.0;
+        double distance = Math.pow(10d, ((double) txPower - rssi) / (10 * 2.5)) / 1000.0;
         return Double.parseDouble(df.format(distance));
     }
 

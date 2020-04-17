@@ -33,8 +33,6 @@ public class Beacons {
     public Beacons(BluetoothDevice bt, Context cnt) {
         this.bluetoothDevice = bt;
         this.context = cnt;
-
-
     }
 
     public void connectToGATT(){
