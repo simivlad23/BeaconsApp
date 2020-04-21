@@ -1,0 +1,29 @@
+
+T
+java:S1153Ê"1Directly append the argument of String.valueOf().(‘²€¯úÿÿÿÿ8´ÖÉÍ“.
+T
+java:S1153Ê"1Directly append the argument of String.valueOf().(‘²€¯úÿÿÿÿ8´ÖÉÍ“.
+F
+java:S1148Ş"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8´ÖÉÍ“.
+I
+java:S1068%"'Remove this unused "TAG" private field.(·˜ş’ûÿÿÿÿ8´ÖÉÍ“.
+^
+java:S1854¨";Remove this useless assignment to local variable "timier3".(æõÎùşÿÿÿÿ8´ÖÉÍ“.
+O
+java:S1481¨",Remove this unused "timier3" local variable.(æõÎùşÿÿÿÿ8´ÖÉÍ“.
+E
+java:S1172r"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+F
+java:S1172ˆ"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+E
+java:S1172F"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+E
+java:S1172h"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+F
+java:S1172’"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+^	java:S125Ÿ"<This block of commented-out lines of code should be removed.(ïğ®’şÿÿÿÿ8´ÖÉÍ“.
+L
+java:S1128
+"/Remove this unused import 'android.os.Handler'.(ûÛ’¡8´ÖÉÍ“.
+E
+java:S1172|"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
