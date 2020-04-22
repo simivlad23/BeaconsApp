@@ -52,7 +52,7 @@ public class LiveView extends SurfaceView implements Runnable {
     public LiveView(Context context, Point size) {
         super(context);
         this.context = context;
-        flooriamge = context.getResources().getDrawable(R.drawable.floorplan);
+        flooriamge = context.getResources().getDrawable(R.drawable.house_plan);
 
         screenX = size.x;
         screenY = size.y;

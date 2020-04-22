@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button buttonStartDetect = findViewById(R.id.button1);
         Button buttonStopRead = findViewById(R.id.button2);
-       // Button buttonNrDevices = findViewById(R.id.button3);
+        Button buttonNrDevices = findViewById(R.id.button3);
         Button buttonStartCollecting = findViewById(R.id.button4);
         Button buttonGetLivePosition = findViewById(R.id.getLivePositionButton);
         Button buttongetPosition = findViewById(R.id.button6);
@@ -136,15 +136,15 @@ public class MainActivity extends AppCompatActivity {
                 export();
             }
         });
-//        buttonNrDevices.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//
-//                BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-//                List<BluetoothDevice> connected = manager.getConnectedDevices(GATT);
-//                Log.i("Connected Devices: ", connected.size() + "");
-//
-//            }
-//        });
+        buttonNrDevices.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+                List<BluetoothDevice> connected = manager.getConnectedDevices(GATT);
+                Log.i("Connected Devices: ", connected.size() + "");
+
+            }
+        });
 
         buttonStartCollecting.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

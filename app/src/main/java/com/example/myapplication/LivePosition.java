@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 
 import com.example.myapplication.views.LiveView;
@@ -22,6 +23,7 @@ public class LivePosition extends AppCompatActivity {
         display.getSize(size);
 
         liveView = new LiveView(this,size);
+        Log.i("DISPLAY","x ="+ size.x+ "  y="+size.y);
         setContentView(liveView);
 
     }
