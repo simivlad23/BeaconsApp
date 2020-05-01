@@ -21,6 +21,8 @@ Thumbs.db
 # OSX files
 .DS_Store
 
+.sonar
+
 # Android Studio
 *.iml
 .idea
