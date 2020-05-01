@@ -51,29 +51,21 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listView = findViewById(R.id.listView);
 
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-
-        //wifiManager.startScan();
-        Util.wifiList = wifiManager.getScanResults();
         final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
-        listAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, mDeviceList);
+        listView = findViewById(R.id.listView);
+        listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mDeviceList);
         listView.setAdapter(listAdapter);
 
         Button buttonStartDetect = findViewById(R.id.button1);
         Button buttonStopRead = findViewById(R.id.button2);
-        Button buttonNrDevices = findViewById(R.id.button3);
         Button buttonStartCollecting = findViewById(R.id.button4);
         Button buttonGetLivePosition = findViewById(R.id.getLivePositionButton);
         Button buttongetPosition = findViewById(R.id.button6);
 
         textViewLat = findViewById(R.id.textView3);
         textViewLng = findViewById(R.id.textView5);
-
 
 
         buttonStartDetect.setOnClickListener(new View.OnClickListener() {
@@ -85,17 +77,6 @@ public class MainActivity extends AppCompatActivity {
                     Util.beaconsList.add(beacons);
                 }
 
-
-                final Timer timerWifi = new Timer();
-                timerWifi.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        wifiManager.startScan();
-                        Util.wifiList= wifiManager.getScanResults();
-                    }
-                },0,300);
-
-
                 final Timer timier = new Timer();
                 timier.scheduleAtFixedRate(new TimerTask() {
                     @Override
@@ -105,16 +86,12 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 mDeviceList.clear();
                                 for (Beacons beacons : Util.beaconsList) {
-
-                                    mDeviceList.add(beacons.getBluetoothDevice().getAddress() + " rssi: " + beacons.getRssiValue() + "; dis:" + beacons.getDistance());
+                                    mDeviceList.add(beacons.getBluetoothDevice().getName() + "\n" +
+                                            "rssi: " + beacons.getRssiValue() + ";\ndis3: " + beacons.getDistanceFormula3() + "\ndis2: " + beacons.getDistanceFormula2() + "\n" +
+                                            "mean rssi: " + beacons.getAverageRssiValue() + ";\ndis3: " + beacons.getDistanceAverage() + "\ndis2: " + beacons.getDistanceFormula2());
                                     listAdapter.notifyDataSetChanged();
 
                                 }
-//                                for (ScanResult scanResult : Util.wifiList) {
-//                                    int level = scanResult.level;
-//                                    mDeviceList.add(scanResult.BSSID + " rssi: " + level + "; dis:" + Util.getDistance2(level,4));
-//                                    listAdapter.notifyDataSetChanged();
-//                                }
                             }
                         });
 
@@ -126,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
                 listView.setAdapter(listAdapter);
             }
         });
+
         buttonStopRead.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 for (Beacons beacons : Util.beaconsList) {
                     beacons.stopReacording();
                 }
@@ -136,15 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 export();
             }
         });
-        buttonNrDevices.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
 
-                BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-                List<BluetoothDevice> connected = manager.getConnectedDevices(GATT);
-                Log.i("Connected Devices: ", connected.size() + "");
-
-            }
-        });
 
         buttonStartCollecting.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -153,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivity(myIntent);
                 Util.makeTaost("Start collecting data", getApplicationContext());
 
-
             }
         });
 
@@ -161,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent myIntent = new Intent(MainActivity.this, LivePosition.class);
-               // myIntent.putExtra("key", value); //Optional parameters
                 MainActivity.this.startActivity(myIntent);
 
             }
@@ -180,25 +147,9 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
 
-                                Position position = Util.calcutate();
-                                //Util.updateBeaconsDistances();
+                                Position position = Util.calcutateBasedMeanRssi();
                                 Util.positionsList.add(position);
-
-                            }
-                        });
-
-                    }
-                }, 1500, 1500);
-
-                final Timer timier3 = new Timer();
-                timier2.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                Position position = Util.getMedianPosition();
+                                position = Util.getMedianPosition();
                                 textViewLat.setText(String.valueOf(position.getLat()));
                                 textViewLng.setText(String.valueOf(position.getLng()));
 
@@ -206,12 +157,10 @@ public class MainActivity extends AppCompatActivity {
                         });
 
                     }
-                }, 1600, 1500);
-
+                }, 1500, 1500);
 
             }
         });
-
 
     }
 
@@ -220,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
         StringBuilder data = new StringBuilder();
         data.append("Time,Name,Addres,RSSI,distance");
 
-        Util.filterRecorderList();
 
         for (RssiRecord record : Util.recordsList) {
             data.append("\n" + record.getTimeReacord() + "," + record.getDeviceName() + "," + record.getDeviceAddress() + "," + String.valueOf(record.getRssiValue()) + "," + String.valueOf(record.getDistanceCalculated()));

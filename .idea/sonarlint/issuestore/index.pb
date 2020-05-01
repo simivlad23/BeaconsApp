@@ -19,3 +19,13 @@ m
 =app/src/main/java/com/example/myapplication/MainActivity.java,9\7\97d5d04e52812b9d0ac3b157695041e5f8fbc36a
 P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+m
+=app/src/main/java/com/example/myapplication/LivePosition.java,d\0\d02ac72f788abd68aa53e5c0520df8622b89696e
+y
+Iapp/src/main/java/com/example/myapplication/views/DataCollectingView.java,1\d\1dab26b7c16191addd1eb5697753617e620678ab
+w
+Gapp/src/main/java/com/example/myapplication/DataCollectingActivity.java,f\9\f9039f691f6e1a5ca7e9c13c42d4824cdaa8a5d9
+o
+?app/src/main/java/com/example/myapplication/views/LiveView.java,e\7\e75c42749f164df6b7e34e8898628aec84b02369
+q
+Aapp/src/main/java/com/example/myapplication/model/RssiRecord.java,a\f\afbf741460b805553f812d8651e7cfe6fc3aa982

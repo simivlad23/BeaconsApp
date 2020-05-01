@@ -1,41 +1,47 @@
 
-H
-java:S1172<"+Remove this unused method parameter "time".(¨ä²ó8¶ÖÉÍ“.
-:
-java:S2386"Make this member "protected".(èÌ¨8¶ÖÉÍ“.
-v
-java:S1104""YMake positionsList a static final constant or non-public and provide accessors if needed.(µæØÿ8¶ÖÉÍ“.
-t
-java:S1104"WMake beaconsList a static final constant or non-public and provide accessors if needed.(èÌ¨8¶ÖÉÍ“.
-t
-java:S1104!"WMake recordsList a static final constant or non-public and provide accessors if needed.(²è¬ˆ8¶ÖÉÍ“.
 L
-java:S1128"/Remove this unused import 'java.util.Iterator'.(¥ÍòÕ8¶ÖÉÍ“.
-S
-java:S1444$"6Make this "public static startDateReading" field final(ïèõ”8¶ÖÉÍ“.
-:
-java:S2386""Make this member "protected".(µæØÿ8¶ÖÉÍ“.
-:
-java:S2386$"Make this member "protected".(ïèõ”8¶ÖÉÍ“.
-W
-java:S1118":Add a private constructor to hide the implicit public one.(×¼­Æ8¶ÖÉÍ“.
-C	java:S131e""Add a default case to this switch.(›ú‡‘şÿÿÿÿ8¶ÖÉÍ“.
-N
-java:S1444!"1Make this "public static recordsList" field final(²è¬ˆ8¶ÖÉÍ“.
-P
-java:S1172&".Remove this unused method parameter "txPower".(ÿ›Å ÿÿÿÿÿ8¶ÖÉÍ“.
-P
-java:S1444""3Make this "public static positionsList" field final(µæØÿ8¶ÖÉÍ“.
-y
-java:S1104$"\Make startDateReading a static final constant or non-public and provide accessors if needed.(ïèõ”8¶ÖÉÍ“.
+java:S1128"/Remove this unused import 'java.util.Iterator'.(¥ÍòÕ8¶ÖÉÍ“.
 
-java:S1488?"_Immediately return this expression instead of assigning it to the temporary variable "dateNow".(Ï³Ìøÿÿÿÿ8¶ÖÉÍ“.
-U
-java:S1128"3Remove this unused import 'android.icu.text.Edits'.(€Î©ãúÿÿÿÿ8¶ÖÉÍ“.
-N
-java:S1444"1Make this "public static beaconsList" field final(èÌ¨8¶ÖÉÍ“.
-T
-java:S1135D"2Complete the task associated to this TODO comment.( ÌÈ¬úÿÿÿÿ8¶ÖÉÍ“.
-]	java:S125X"<This block of commented-out lines of code should be removed.(Œ¶¸ˆÿÿÿÿÿ8¶ÖÉÍ“.
+java:S1488S"_Immediately return this expression instead of assigning it to the temporary variable "dateNow".(Ï³Ìøÿÿÿÿ8¶ÖÉÍ“.
 :
-java:S2386!"Make this member "protected".(²è¬ˆ8¶ÖÉÍ“.
+java:S2386!"Make this member "protected".(èÌ¨8¶ÖÉÍ“.
+W
+java:S1118":Add a private constructor to hide the implicit public one.(×¼­Æ8¶ÖÉÍ“.
+t
+java:S1104!"WMake beaconsList a static final constant or non-public and provide accessors if needed.(èÌ¨8¶ÖÉÍ“.
+T
+java:S1135X"2Complete the task associated to this TODO comment.( ÌÈ¬úÿÿÿÿ8¶ÖÉÍ“.
+:
+java:S2386$"Make this member "protected".(²è¬ˆ8¶ÖÉÍ“.
+C	java:S131y""Add a default case to this switch.(›ú‡‘şÿÿÿÿ8¶ÖÉÍ“.
+:
+java:S2386%"Make this member "protected".(µæØÿ8¶ÖÉÍ“.
+y
+java:S1104'"\Make startDateReading a static final constant or non-public and provide accessors if needed.(ïèõ”8¶ÖÉÍ“.
+P
+java:S1444%"3Make this "public static positionsList" field final(µæØÿ8¶ÖÉÍ“.
+H
+java:S1172P"+Remove this unused method parameter "time".(¨ä²ó8¶ÖÉÍ“.
+]	java:S125l"<This block of commented-out lines of code should be removed.(Œ¶¸ˆÿÿÿÿÿ8¶ÖÉÍ“.
+v
+java:S1104%"YMake positionsList a static final constant or non-public and provide accessors if needed.(µæØÿ8¶ÖÉÍ“.
+P
+java:S1172)".Remove this unused method parameter "txPower".(ÿ›Å ÿÿÿÿÿ8¶ÖÉÍ“.
+N
+java:S1444$"1Make this "public static recordsList" field final(²è¬ˆ8¶ÖÉÍ“.
+S
+java:S1444'"6Make this "public static startDateReading" field final(ïèõ”8¶ÖÉÍ“.
+N
+java:S1444!"1Make this "public static beaconsList" field final(èÌ¨8¶ÖÉÍ“.
+t
+java:S1104$"WMake recordsList a static final constant or non-public and provide accessors if needed.(²è¬ˆ8¶ÖÉÍ“.
+U
+java:S1128"3Remove this unused import 'android.icu.text.Edits'.(€Î©ãúÿÿÿÿ8¶ÖÉÍ“.
+J
+java:S1444"".Make this "public static wifiList" field final(Äœ™8Ô¡º¤œ.
+p
+java:S1104""TMake wifiList a static final constant or non-public and provide accessors if needed.(Äœ™8Ô¡º¤œ.
+P
+java:S1128"3Remove this unused import 'android.graphics.Point'.(Õ ô²8Ô¡º¤œ.
+:
+java:S2386'"Make this member "protected".(ïèõ”8Ô¡º¤œ.

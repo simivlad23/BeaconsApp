@@ -1,9 +1,9 @@
 package com.example.myapplication;
 
 import android.content.Context;
-import android.graphics.Point;
-import android.icu.text.Edits;
-import android.net.wifi.ScanResult;
+//import android.graphics.Point;
+//import android.icu.text.Edits;
+//import android.net.wifi.ScanResult;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -30,34 +30,45 @@ public class Util {
     private static final double RF_A = 23; // the absolute energy which is represent by dBm at a distance of 1 meter from the transmitter
     private static final double RF_N = 2.3; // n is the signal transmission constant
     private static final long FIVE_SECOND_MILISECOND = 10000l;
+    public static final double MARGIN_UP = 0.85;
+    public static final double MARGIN_LEFT = 0.85;
+
     public static List<Beacons> beaconsList = new ArrayList<>();
-    public static List<ScanResult> wifiList;
-    private static DecimalFormat df = new DecimalFormat("#.000");
+    public static DecimalFormat df = new DecimalFormat("#.000");
     public static List<RssiRecord> recordsList = new ArrayList<>();
     public static List<Position> positionsList = new ArrayList<>();
+    public static List<Position> testPosition = new ArrayList<>();
 
-    public static Date startDateReading;
 
     public static double getDistance(double rssi, double txPower) {
         return (Math.pow(10d, -((rssi + RF_A) / 10 * RF_N))) / 10.0;
     }
 
-    public static double getDistance2(int rssi, int txPower) {
-        double distance = Math.pow(10d, ((double) txPower - rssi) / (10 * 2.5)) / 1000.0;
+    public static double getDistance2(double rssi, int txPower) {
+        double distance = Math.pow(10d, ((double) txPower - rssi) / (10 * 2)) / 100.0;
         return Double.parseDouble(df.format(distance));
+    }
+
+    public static double getDistance3(double rssi, int txPower) {
+
+        //hard coded power value. Usually ranges between -59 to -65
+
+        if (rssi == 0) {
+            return -1.0;
+        }
+
+        double ratio = rssi * 1.0 / txPower;
+        if (ratio < 1.0) {
+            return Math.pow(ratio, 10);
+        } else {
+            double distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
+            return Double.parseDouble(df.format(distance));
+        }
     }
 
     public static void makeTaost(String message, Context context) {
         Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
         toast.show();
-    }
-
-    public static void initStartDateReading() {
-
-        long timeNow = System.currentTimeMillis() + FIVE_SECOND_MILISECOND;
-        startDateReading = new Date(timeNow);
-        Log.i(TAG, "Time to read :" + startDateReading.toString() + " --- " + new Date(System.currentTimeMillis()).toString() + "   ; and curent time milisecond:" + startDateReading.getTime() + "  -- " + System.currentTimeMillis());
-
     }
 
     public static Date convertFromEpochToDate(long time) {
@@ -67,33 +78,58 @@ public class Util {
         return dateNow;
     }
 
-    public static void filterRecorderList() {
-        //TODO to filter recorder list, every timestamp must to have value from all beacons
-    }
+    public static Position calcutateBasedNowRssi() {
 
-    public static Position calcutate() {
+        double[][] positions = new double[beaconsList.size()][2];
+        double[] distances = new double[beaconsList.size()];
 
-        Beacons beacon1 = Util.beaconsList.get(0);
-        Beacons beacon2 = Util.beaconsList.get(1);
-        Beacons beacon3 = Util.beaconsList.get(2);
+        for(int i=0;i<beaconsList.size();i++){
 
-        double[][] positions = new double[][]{{beacon1.getLat(), beacon1.getLng()}, {beacon2.getLat(), beacon2.getLng()}, {beacon3.getLat(), beacon3.getLng()}};
-        double[] distances = new double[]{beacon1.getDistance(), beacon2.getDistance(), beacon3.getDistance()};
+            positions[i][0] = beaconsList.get(i).getLat();
+            positions[i][1] = beaconsList.get(i).getLng();
+
+            distances[i]= beaconsList.get(i).getDistanceFormula3();
+        }
 
         NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
         LeastSquaresOptimizer.Optimum optimum = solver.solve();
 
-// the answer
+        // the answer
         double[] calculatedPosition = optimum.getPoint().toArray();
 
-// error and geometry information
+        // error and geometry information
+        //RealVector standardDeviation = optimum.getSigma(0);
+        //RealMatrix covarianceMatrix = optimum.getCovariances(0);
 
-//        RealVector standardDeviation = optimum.getSigma(0);
-//        RealMatrix covarianceMatrix = optimum.getCovariances(0);
+        Log.i("NOW_POSITION", "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
+        return new Position(Double.parseDouble(df.format(calculatedPosition[0])), Double.parseDouble(df.format(calculatedPosition[1])));
 
+    }
 
-        Log.i(TAG, "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
+    public static Position calcutateBasedMeanRssi() {
 
+        double[][] positions = new double[beaconsList.size()][2];
+        double[] distances = new double[beaconsList.size()];
+
+        for(int i=0;i<beaconsList.size();i++){
+
+            positions[i][0] = beaconsList.get(i).getLat();
+            positions[i][1] = beaconsList.get(i).getLng();
+
+            distances[i]= beaconsList.get(i).getDistanceAverage();
+        }
+
+        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
+        LeastSquaresOptimizer.Optimum optimum = solver.solve();
+
+        // the answer
+        double[] calculatedPosition = optimum.getPoint().toArray();
+
+        // error and geometry information
+        //RealVector standardDeviation = optimum.getSigma(0);
+        //RealMatrix covarianceMatrix = optimum.getCovariances(0);
+
+        Log.i("MEAN_POSITION", "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
         return new Position(Double.parseDouble(df.format(calculatedPosition[0])), Double.parseDouble(df.format(calculatedPosition[1])));
 
     }
@@ -103,24 +139,26 @@ public class Util {
         for (Beacons beacons : beaconsList) {
             switch (beacons.getBluetoothDevice().getAddress()) {
                 case "C7:7E:A2:BD:51:4C":
-                    beacons.setLat(3);
-                    beacons.setLng(1);
+                    beacons.setLat(0);
+                    beacons.setLng(0);
                     break;
                 case "D2:83:6A:5E:AB:F8":
-                    beacons.setLat(1);
-                    beacons.setLng(1);
+                    beacons.setLat(4.2);
+                    beacons.setLng(5.2);
                     break;
                 case "D1:A4:D2:15:51:00":
-                    beacons.setLat(1);
-                    beacons.setLng(3);
+                    beacons.setLat(4.2);
+                    beacons.setLng(0);
+                    break;
+                case "C0:08:B4:0E:37:0E":
+                    beacons.setLat(0);
+                    beacons.setLng(5.2);
+                    break;
+                case "C8:26:E3:CE:42:5C":
+                    beacons.setLat(2.1);
+                    beacons.setLng(2.6);
                     break;
             }
-        }
-    }
-
-    public static void updateBeaconsDistances() {
-        for (Beacons beacons : beaconsList) {
-            beacons.setAverageBleDistance();
         }
     }
 
@@ -141,6 +179,19 @@ public class Util {
 
         return new Position(Double.parseDouble(df.format(lat)), Double.parseDouble(df.format(lng)));
 
+    }
+
+    public static void setTestPosition() {
+
+        Position position1 = new Position(1.0, 4.0);
+        Position position2 = new Position(2.0, 3.0);
+        Position position3 = new Position(3.0, 2.0);
+        Position position4 = new Position(4.0, 1.0);
+
+        Util.positionsList.add(position1);
+        Util.positionsList.add(position2);
+        Util.positionsList.add(position3);
+        Util.positionsList.add(position4);
     }
 
 

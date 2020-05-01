@@ -29,16 +29,16 @@ public class LiveView extends SurfaceView implements Runnable {
     private int screenY;
 
     //measured in meters
-    private static int FOOR_WIDE = 5;
-    private static int FLOOR_HEIGHT = 8;
+    private static double FOOR_WIDE = 8.7;
+    private static double FLOOR_HEIGHT = 14.3 ;
 
     private int blockSize;
 
-    private final int NUM_BLOCKS_WIDE = 40;
+    private final int NUM_BLOCKS_WIDE = 100;
     private int numBlocksHigh;
 
     private long nextFrameTime;
-    private final long FPS = 2;
+    private final long FPS = 10;
     private final long MILLIS_PER_SECOND = 1000;
 
     private volatile boolean isPlaying;
@@ -102,13 +102,10 @@ public class LiveView extends SurfaceView implements Runnable {
             flooriamge.setBounds(imageBounds);
             flooriamge.draw(canvas);
 
-
             paint.setColor(Color.BLUE);
-            Iterator<Beacons> iterator = Util.beaconsList.iterator();
 
-            while (iterator.hasNext()){
+            for(Beacons beacons: Util.beaconsList){
 
-                Beacons beacons = iterator.next();
                 double beaconX = beacons.getLat();
                 double beaconY = beacons.getLng();
                 Point scalePositionBeacon = convertCoordinates(beaconX,beaconY);
@@ -121,16 +118,27 @@ public class LiveView extends SurfaceView implements Runnable {
                         paint);
             }
 
-
-            //####################  DRAW CURRENT POSITION ####################
+            //####################  DRAW CURRENT POSITION  BASED MEAN RSSI VALUE ####################
             paint.setColor(Color.argb(255, 255, 0, 0));
-            Position position = Util.calcutate();
+            Position position = Util.calcutateBasedMeanRssi();
             Point scalePositionNow = convertCoordinates(position.getLat(),position.getLng());
 
             canvas.drawRect(scalePositionNow.x * blockSize,
                     (scalePositionNow.y * blockSize),
                     (scalePositionNow.x * blockSize) + blockSize,
                     (scalePositionNow.y * blockSize) + blockSize,
+                    paint);
+
+
+            //####################  DRAW CURRENT POSITION  ####################
+            paint.setColor(Color.argb(255, 0, 255, 0));
+            Position position2 = Util.calcutateBasedNowRssi();
+            Point scalePositionNow2 = convertCoordinates(position2.getLat(),position2.getLng());
+
+            canvas.drawRect(scalePositionNow2.x * blockSize,
+                    (scalePositionNow2.y * blockSize),
+                    (scalePositionNow2.x * blockSize) + blockSize,
+                    (scalePositionNow2.y * blockSize) + blockSize,
                     paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
@@ -172,8 +180,9 @@ public class LiveView extends SurfaceView implements Runnable {
     }
 
     public Point convertCoordinates(double x, double y) {
-        double scaleX = x / FOOR_WIDE;
-        double scaleY = y / FLOOR_HEIGHT;
+        //added 1 because of margin
+        double scaleX = (x + Util.MARGIN_LEFT) / FOOR_WIDE;
+        double scaleY = (y + Util.MARGIN_UP) / FLOOR_HEIGHT;
 
         int newX = (int) (scaleX * NUM_BLOCKS_WIDE);
         int newY = (int) (scaleY * numBlocksHigh);
