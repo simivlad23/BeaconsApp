@@ -31,8 +31,8 @@ public class Util {
     private static final double RF_N = 2.3; // n is the signal transmission constant
     public static final int TX_POWER = -61;
     public static final long FIVE_SECOND_MILISECOND = 10000l;
-    public static final double MARGIN_UP = 0.85;
-    public static final double MARGIN_LEFT = 0.85;
+    public static final double MARGIN_UP = 20;
+    public static final double MARGIN_LEFT = 20;
     public static int SCREEN_X = 1080;
     public static int SCREEN_Y = 2107;
 
@@ -42,7 +42,7 @@ public class Util {
     public static double FLOOR_HEIGHT_CM = 1200;
     public static double WALL_WIDTH = 20;
 
-    public static int NUM_BLOCKS_WIDE = 50;
+    public static int NUM_BLOCKS_WIDE = 100;
     public static int NUM_BLOCK_HIGH = 200;
     public static int BLOCK_SIZE = 50;
 
@@ -65,8 +65,8 @@ public class Util {
     }
 
     public static double getDistance2(double rssi, int txPower) {
-        double distance = Math.pow(10d, ((double) txPower - rssi) / (10 * 2)) / 100.0;
-        return Double.parseDouble(df.format(distance));
+        double distance = Math.pow(10d, ((double) txPower - rssi) / (10 * 2));
+        return distance;
     }
 
     public static double getDistance3(double rssi, int txPower) {
@@ -79,10 +79,10 @@ public class Util {
         double ratio = rssi * 1.0 / txPower;
         if (ratio < 1.0) {
             double distance = Math.pow(ratio, 10);
-            return Double.parseDouble(df.format(distance));
+            return distance*100;
         } else {
             double distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-            return Double.parseDouble(df.format(distance));
+            return distance*100;
         }
     }
 
@@ -145,7 +145,7 @@ public class Util {
         RealMatrix covarianceMatrix = optimum.getCovariances(0);
 
         Log.i("NOW_POSITION", "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
-        return new Position(Double.parseDouble(df.format(calculatedPosition[0])), Double.parseDouble(df.format(calculatedPosition[1])));
+        return new Position(calculatedPosition[0], calculatedPosition[1]);
 
     }
 
@@ -176,8 +176,7 @@ public class Util {
         RealMatrix covarianceMatrix = optimum.getCovariances(0);
 
         Log.i("MEAN_POSITION", "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
-        return new Position(Double.parseDouble(df.format(calculatedPosition[0])), Double.parseDouble(df.format(calculatedPosition[1])));
-
+        return new Position(calculatedPosition[0], calculatedPosition[1]);
     }
 
     public static void setBeaconsPosition() {
@@ -189,20 +188,20 @@ public class Util {
                     beacons.setLng(0);
                     break;
                 case "D2:83:6A:5E:AB:F8":
-                    beacons.setLat(4.2);
-                    beacons.setLng(5.2);
+                    beacons.setLat(410);
+                    beacons.setLng(510);
                     break;
                 case "D1:A4:D2:15:51:00":
-                    beacons.setLat(4.2);
+                    beacons.setLat(410);
                     beacons.setLng(0);
                     break;
                 case "C0:08:B4:0E:37:0E":
-                    beacons.setLat(8.2);
-                    beacons.setLng(5.2);
+                    beacons.setLat(820);
+                    beacons.setLng(510);
                     break;
                 case "C8:26:E3:CE:42:5C":
-                    beacons.setLat(2.1);
-                    beacons.setLng(2.6);
+                    beacons.setLat(210);
+                    beacons.setLng(260);
                     break;
             }
         }
@@ -229,15 +228,15 @@ public class Util {
 
     public static void setTestPosition() {
 
-        Position position1 = new Position(4.2, 3);
-        Position position2 = new Position(7.5, 3.0);
-        Position position3 = new Position(3.0, 7.3);
-        Position position4 = new Position(4.0, 10.45);
+        Position position1 = new Position(0, 0);
+        Position position2 = new Position(410, 0);
+        Position position3 = new Position(410, 510);
+        Position position4 = new Position(0, 510);
 
-        Util.testPosition.add(convertCoordinates(position1.getLat(), position1.getLng()));
-        Util.testPosition.add(convertCoordinates(position2.getLat(), position2.getLng()));
-        Util.testPosition.add(convertCoordinates(position3.getLat(), position3.getLng()));
-        Util.testPosition.add(convertCoordinates(position4.getLat(), position4.getLng()));
+        Util.testPosition.add(convertFromCmToPixels(position1.getLat(), position1.getLng()));
+        Util.testPosition.add(convertFromCmToPixels(position2.getLat(), position2.getLng()));
+        Util.testPosition.add(convertFromCmToPixels(position3.getLat(), position3.getLng()));
+        Util.testPosition.add(convertFromCmToPixels(position4.getLat(), position4.getLng()));
     }
 
     public static void initBeaconAndTestPositions() {
@@ -246,7 +245,7 @@ public class Util {
         Util.NUM_BLOCK_HIGH = SCREEN_Y / BLOCK_SIZE;
 
         for (Beacons beacons : beaconsMap.values()) {
-            Point scalePostion = convertCoordinates(beacons.getLat(), beacons.getLng());
+            Point scalePostion = convertFromCmToPixels(beacons.getLat(), beacons.getLng());
             beaconsPosition.add(scalePostion);
         }
         setTestPosition();
@@ -254,8 +253,8 @@ public class Util {
 
     public static Point convertFromCmToPixels(double x, double y) {
 
-        int newXPixel = (int) (x * PIXELS_PER_CM_X);
-        int newYPixel = (int) (y * PIXELS_PER_CM_Y);
+        int newXPixel = (int) ((x+ MARGIN_LEFT) * PIXELS_PER_CM_X);
+        int newYPixel = (int) ((y+ MARGIN_UP) * PIXELS_PER_CM_Y);
 
         return new Point(newXPixel, newYPixel);
     }

@@ -19,7 +19,7 @@ import java.util.TimerTask;
 public class Beacons {
 
     private static final String TAG = "BLE-BEACON";
-    public static final double WEIGHTED_VALUE = 0.75;
+    public static final double WEIGHTED_VALUE = 0.8;
 
     private BluetoothGatt bluetoothGatt;
     private BluetoothDevice bluetoothDevice;
@@ -160,7 +160,7 @@ public class Beacons {
 
         rssiRecords.addLast(newRssiValue);
 
-        if (rssiRecords.size() > 10) {
+        if (rssiRecords.size() > 5) {
             rssiRecords.removeFirst();
         }
 

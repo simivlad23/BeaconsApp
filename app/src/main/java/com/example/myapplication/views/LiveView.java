@@ -89,19 +89,18 @@ public class LiveView extends SurfaceView implements Runnable {
 
             //####################  DRAW TEST POSITION ####################
             paint.setColor(Color.YELLOW);
-
             for (Point position : Util.testPosition) {
-                canvas.drawRect((position.x),
-                        (position.y),
-                        (position.x) + Util.BLOCK_SIZE,
-                        (position.y) + Util.BLOCK_SIZE,
+                canvas.drawRect(position.x,
+                        position.y,
+                        position.x + Util.BLOCK_SIZE,
+                        position.y + Util.BLOCK_SIZE,
                         paint);
             }
 
             //####################  DRAW CURRENT POSITION  BASED MEAN RSSI VALUE ####################
             paint.setColor(Color.argb(255, 255, 0, 0));
             Position position = Util.calcutateBasedMeanRssi();
-            Point scalePositionNow = Util.convertCoordinates(position.getLat(), position.getLng());
+            Point scalePositionNow = Util.convertFromCmToPixels(position.getLat(), position.getLng());
 
             canvas.drawRect(scalePositionNow.x,
                     (scalePositionNow.y),
@@ -113,14 +112,13 @@ public class LiveView extends SurfaceView implements Runnable {
             //####################  DRAW CURRENT POSITION  ####################
             paint.setColor(Color.argb(255, 0, 255, 0));
             Position position2 = Util.calcutateBasedNowRssi();
-            Point scalePositionNow2 = Util.convertCoordinates(position2.getLat(), position2.getLng());
+            Point scalePositionNow2 = Util.convertFromCmToPixels(position2.getLat(), position2.getLng());
 
             canvas.drawRect(scalePositionNow2.x,
                     (scalePositionNow2.y),
                     (scalePositionNow2.x) + Util.BLOCK_SIZE,
                     (scalePositionNow2.y) + Util.BLOCK_SIZE,
                     paint);
-
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
@@ -139,40 +137,49 @@ public class LiveView extends SurfaceView implements Runnable {
         //DRAW BACKGROUND WHITE
         canvas.drawColor(Color.WHITE);
 
-        int offsetWall = (int) (Util.WALL_WIDTH / 2);
-
         paint.setColor(Color.BLACK);
-        paint.setStrokeWidth((float) Util.WALL_WIDTH);
+        float horizontalWallWidth = (float) (Util.WALL_WIDTH * Util.PIXELS_PER_CM_Y);
+        float vericalWallWidth = (float) (Util.WALL_WIDTH * Util.PIXELS_PER_CM_X);
 
-        //up side
-        canvas.drawLine(offsetWall, offsetWall, Util.SCREEN_X, offsetWall, paint);
+        Point point1 = Util.convertFromCmToPixels(440, 540);
+        Point point2 = Util.convertFromCmToPixels(430, 750);
+        Point point3 = Util.convertFromCmToPixels(120, 1055);
+        Point point4 = Util.convertFromCmToPixels(580, 1055);
+
+
+        //######### DRAW VERTICAL WALLS  #########
+        paint.setStrokeWidth(vericalWallWidth);
+
+        int offsetWall = (int) (vericalWallWidth/ 2);
+
         //left side
         canvas.drawLine(offsetWall, 0, offsetWall, Util.SCREEN_Y, paint);
         //right side
         canvas.drawLine(Util.SCREEN_X - offsetWall, 0, Util.SCREEN_X - offsetWall, Util.SCREEN_Y, paint);
-        //buttom side
-        canvas.drawLine(0, (float) (Util.SCREEN_Y - offsetWall), Util.SCREEN_X, (float) (Util.SCREEN_Y - offsetWall), paint);
-
-        Point point1 = Util.convertFromCmToPixels(450, 560);
         //middle up line
         canvas.drawLine(point1.x - offsetWall, 0, point1.x - offsetWall, point1.y, paint);
+        //left down
+        canvas.drawLine(point3.x + offsetWall, point2.y, point3.x + offsetWall, point3.y, paint);
+        //right down
+        canvas.drawLine(point4.x + offsetWall, point2.y, point4.x + offsetWall, point4.y, paint);
+
+
+        //######### DRAW VERTICAL WALLS  #########
+        paint.setStrokeWidth(horizontalWallWidth);
+
+        offsetWall = (int) (horizontalWallWidth/ 2);
+
+        //buttom side
+        canvas.drawLine(0, (float) (Util.SCREEN_Y - offsetWall), Util.SCREEN_X, (float) (Util.SCREEN_Y - offsetWall), paint);
+        //up side
+        canvas.drawLine(offsetWall, offsetWall, Util.SCREEN_X, offsetWall, paint);
         //middle horizontal line
         canvas.drawLine(0, point1.y - offsetWall, Util.SCREEN_X, point1.y - offsetWall, paint);
-
-        Point point2 = Util.convertFromCmToPixels(450, 770);
         //second horizontal line
         canvas.drawLine(0, point2.y - offsetWall, Util.SCREEN_X, point2.y - offsetWall, paint);
-
-        Point point3 = Util.convertFromCmToPixels(140, 1075);
         // last horizontal line
         canvas.drawLine(point3.x, point3.y - offsetWall, Util.SCREEN_X, point3.y - offsetWall, paint);
 
-        //left down
-        canvas.drawLine(point3.x + offsetWall, point2.y, point3.x + offsetWall, point3.y, paint);
-
-        //right down
-        Point point4 = Util.convertFromCmToPixels(600, 1075);
-        canvas.drawLine(point4.x + offsetWall, point2.y, point4.x + offsetWall, point4.y, paint);
 
     }
 
