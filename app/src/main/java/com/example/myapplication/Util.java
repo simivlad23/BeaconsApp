@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,13 +34,20 @@ public class Util {
     public static final double MARGIN_UP = 0.85;
     public static final double MARGIN_LEFT = 0.85;
     public static int SCREEN_X = 1080;
-    public static int SCREEN_y = 2107;
+    public static int SCREEN_Y = 2107;
 
     public static double FOOR_WIDE = 8.2;
     public static double FLOOR_HEIGHT = 12;
+    public static double FOOR_WIDE_CM = 810;
+    public static double FLOOR_HEIGHT_CM = 1200;
+    public static double WALL_WIDTH = 20;
+
     public static int NUM_BLOCKS_WIDE = 50;
     public static int NUM_BLOCK_HIGH = 200;
     public static int BLOCK_SIZE = 50;
+
+    public static double PIXELS_PER_CM_X = SCREEN_X / FOOR_WIDE_CM;
+    public static double PIXELS_PER_CM_Y = SCREEN_Y / FLOOR_HEIGHT_CM;
 
 
     public static Map<String, Beacons> beaconsMap = new HashMap<>();
@@ -78,6 +86,27 @@ public class Util {
         }
     }
 
+    public static void makeCustomToast(String message, Context context) {
+        final Toast mToastToShow;
+        int toastDurationInMilliSeconds = 100;
+        mToastToShow = Toast.makeText(context, "Hello world, I am a toast.", Toast.LENGTH_LONG);
+
+        CountDownTimer toastCountDown;
+        toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000 /*Tick duration*/) {
+            public void onTick(long millisUntilFinished) {
+                mToastToShow.show();
+            }
+
+            public void onFinish() {
+                mToastToShow.cancel();
+            }
+        };
+
+        mToastToShow.show();
+        toastCountDown.start();
+
+    }
+
     public static void makeTaost(String message, Context context) {
         Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
         toast.show();
@@ -111,7 +140,7 @@ public class Util {
         // the answer
         double[] calculatedPosition = optimum.getPoint().toArray();
 
-         //error and geometry information
+        //error and geometry information
         RealVector standardDeviation = optimum.getSigma(0);
         RealMatrix covarianceMatrix = optimum.getCovariances(0);
 
@@ -214,7 +243,7 @@ public class Util {
     public static void initBeaconAndTestPositions() {
 
         BLOCK_SIZE = SCREEN_X / NUM_BLOCKS_WIDE;
-        Util.NUM_BLOCK_HIGH = SCREEN_y / BLOCK_SIZE;
+        Util.NUM_BLOCK_HIGH = SCREEN_Y / BLOCK_SIZE;
 
         for (Beacons beacons : beaconsMap.values()) {
             Point scalePostion = convertCoordinates(beacons.getLat(), beacons.getLng());
@@ -223,12 +252,21 @@ public class Util {
         setTestPosition();
     }
 
+    public static Point convertFromCmToPixels(double x, double y) {
+
+        int newXPixel = (int) (x * PIXELS_PER_CM_X);
+        int newYPixel = (int) (y * PIXELS_PER_CM_Y);
+
+        return new Point(newXPixel, newYPixel);
+    }
+
+
     public static Point convertCoordinates(double x, double y) {
         double scaleX = x / FOOR_WIDE;
         double scaleY = y / FLOOR_HEIGHT;
 
         int newXPixel = (int) (scaleX * SCREEN_X);
-        int newYPixel = (int) (scaleY * SCREEN_y);
+        int newYPixel = (int) (scaleY * SCREEN_Y);
 
         return new Point(newXPixel, newYPixel);
     }
