@@ -73,10 +73,9 @@ public class LiveView extends SurfaceView implements Runnable {
     public void draw() {
         if (surfaceHolder.getSurface().isValid()) {
             canvas = surfaceHolder.lockCanvas();
-            Rect imageBounds = canvas.getClipBounds();
 
-            flooriamge.setBounds(imageBounds);
-            flooriamge.draw(canvas);
+            initFloorPlan(canvas);
+
             //####################  DRAW BEACONS POSITION ##################
             paint.setColor(Color.BLUE);
 
@@ -135,6 +134,47 @@ public class LiveView extends SurfaceView implements Runnable {
         return false;
     }
 
+    public void initFloorPlan(Canvas canvas) {
+
+        //DRAW BACKGROUND WHITE
+        canvas.drawColor(Color.WHITE);
+
+        int offsetWall = (int) (Util.WALL_WIDTH / 2);
+
+        paint.setColor(Color.BLACK);
+        paint.setStrokeWidth((float) Util.WALL_WIDTH);
+
+        //up side
+        canvas.drawLine(offsetWall, offsetWall, Util.SCREEN_X, offsetWall, paint);
+        //left side
+        canvas.drawLine(offsetWall, 0, offsetWall, Util.SCREEN_Y, paint);
+        //right side
+        canvas.drawLine(Util.SCREEN_X - offsetWall, 0, Util.SCREEN_X - offsetWall, Util.SCREEN_Y, paint);
+        //buttom side
+        canvas.drawLine(0, (float) (Util.SCREEN_Y - offsetWall), Util.SCREEN_X, (float) (Util.SCREEN_Y - offsetWall), paint);
+
+        Point point1 = Util.convertFromCmToPixels(450, 560);
+        //middle up line
+        canvas.drawLine(point1.x - offsetWall, 0, point1.x - offsetWall, point1.y, paint);
+        //middle horizontal line
+        canvas.drawLine(0, point1.y - offsetWall, Util.SCREEN_X, point1.y - offsetWall, paint);
+
+        Point point2 = Util.convertFromCmToPixels(450, 770);
+        //second horizontal line
+        canvas.drawLine(0, point2.y - offsetWall, Util.SCREEN_X, point2.y - offsetWall, paint);
+
+        Point point3 = Util.convertFromCmToPixels(140, 1075);
+        // last horizontal line
+        canvas.drawLine(point3.x, point3.y - offsetWall, Util.SCREEN_X, point3.y - offsetWall, paint);
+
+        //left down
+        canvas.drawLine(point3.x + offsetWall, point2.y, point3.x + offsetWall, point3.y, paint);
+
+        //right down
+        Point point4 = Util.convertFromCmToPixels(600, 1075);
+        canvas.drawLine(point4.x + offsetWall, point2.y, point4.x + offsetWall, point4.y, paint);
+
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
