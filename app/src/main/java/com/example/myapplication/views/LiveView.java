@@ -25,40 +25,23 @@ public class LiveView extends SurfaceView implements Runnable {
     private Thread thread = null;
     private Context context;
 
-    private int screenX;
-    private int screenY;
-
-    //measured in meters
-    private static double FOOR_WIDE = 8.7;
-    private static double FLOOR_HEIGHT = 14.3 ;
-
-    private int blockSize;
-
-    private final int NUM_BLOCKS_WIDE = 100;
-    private int numBlocksHigh;
-
     private long nextFrameTime;
     private final long FPS = 10;
     private final long MILLIS_PER_SECOND = 1000;
 
     private volatile boolean isPlaying;
 
-
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
     private Paint paint;
     private Drawable flooriamge;
+
 
     public LiveView(Context context, Point size) {
         super(context);
         this.context = context;
         flooriamge = context.getResources().getDrawable(R.drawable.house_plan);
 
-        screenX = size.x;
-        screenY = size.y;
-
-        blockSize = screenX / NUM_BLOCKS_WIDE;
-        numBlocksHigh = screenY / blockSize;
 
         surfaceHolder = getHolder();
         paint = new Paint();
@@ -102,43 +85,67 @@ public class LiveView extends SurfaceView implements Runnable {
             flooriamge.setBounds(imageBounds);
             flooriamge.draw(canvas);
 
+
+
+            //####################  DRAW BEACONS POSITION ##################
             paint.setColor(Color.BLUE);
 
-            for(Beacons beacons: Util.beaconsList){
-
-                double beaconX = beacons.getLat();
-                double beaconY = beacons.getLng();
-                Point scalePositionBeacon = convertCoordinates(beaconX,beaconY);
-
-                Log.d("POZ"," x= "+ scalePositionBeacon.x * blockSize +" ; y="+ scalePositionBeacon.y * blockSize );
-                canvas.drawRect(scalePositionBeacon.x * blockSize,
-                        (scalePositionBeacon.y * blockSize),
-                        (scalePositionBeacon.x  * blockSize) + blockSize,
-                        (scalePositionBeacon.y * blockSize) + blockSize,
+            for (Point position : Util.beaconsPosition) {
+                canvas.drawRect((position.x * Util.BLOCK_SIZE),
+                        (position.y * Util.BLOCK_SIZE),
+                        (position.x * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+                        (position.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
                         paint);
             }
+
+            //####################  DRAW TEST POSITION ####################
+            paint.setColor(Color.YELLOW);
+
+            for (Point position : Util.testPosition) {
+                canvas.drawRect((position.x * Util.BLOCK_SIZE),
+                        (position.y * Util.BLOCK_SIZE),
+                        (position.x * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+                        (position.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+                        paint);
+            }
+
+//            for (Beacons beacons : Util.beaconsMap.values()) {
+//
+//                double beaconX = beacons.getLat();
+//                double beaconY = beacons.getLng();
+//                Point scalePositionBeacon = convertCoordinates(beaconX, beaconY);
+//
+//                Log.d("POS_BEACON", " x= " + scalePositionBeacon.x * blockSize + " ; y=" + scalePositionBeacon.y * blockSize);
+//
+//                canvas.drawRect(scalePositionBeacon.x * blockSize,
+//                        (scalePositionBeacon.y * blockSize),
+//                        (scalePositionBeacon.x * blockSize) + blockSize,
+//                        (scalePositionBeacon.y * blockSize) + blockSize,
+//                        paint);
+//            }
+
 
             //####################  DRAW CURRENT POSITION  BASED MEAN RSSI VALUE ####################
             paint.setColor(Color.argb(255, 255, 0, 0));
             Position position = Util.calcutateBasedMeanRssi();
-            Point scalePositionNow = convertCoordinates(position.getLat(),position.getLng());
+            Point scalePositionNow = Util.convertCoordinates(position.getLat(), position.getLng());
 
-            canvas.drawRect(scalePositionNow.x * blockSize,
-                    (scalePositionNow.y * blockSize),
-                    (scalePositionNow.x * blockSize) + blockSize,
-                    (scalePositionNow.y * blockSize) + blockSize,
+            canvas.drawRect(scalePositionNow.x * Util.BLOCK_SIZE,
+                    (scalePositionNow.y * Util.BLOCK_SIZE),
+                    (scalePositionNow.x * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+                    (scalePositionNow.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
                     paint);
 
 
             //####################  DRAW CURRENT POSITION  ####################
             paint.setColor(Color.argb(255, 0, 255, 0));
             Position position2 = Util.calcutateBasedNowRssi();
-            Point scalePositionNow2 = convertCoordinates(position2.getLat(),position2.getLng());
+            Point scalePositionNow2 = Util.convertCoordinates(position2.getLat(), position2.getLng());
 
-            canvas.drawRect(scalePositionNow2.x * blockSize,
-                    (scalePositionNow2.y * blockSize),
-                    (scalePositionNow2.x * blockSize) + blockSize,
-                    (scalePositionNow2.y * blockSize) + blockSize,
+            canvas.drawRect(scalePositionNow2.x * Util.BLOCK_SIZE,
+                    (scalePositionNow2.y * Util.BLOCK_SIZE),
+                    (scalePositionNow2.x * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+                    (scalePositionNow2.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
                     paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
@@ -157,36 +164,25 @@ public class LiveView extends SurfaceView implements Runnable {
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
 
-        int x = (int)motionEvent.getX();
-        int y = (int)motionEvent.getY();
+        int x = (int) motionEvent.getX();
+        int y = (int) motionEvent.getY();
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Log.i("TAG", "touched down");
-                Util.makeTaost("touched down",context);
+                Util.makeTaost("touched down", context);
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.i("TAG", "moving: (" + x + ", " + y + ")");
-                Util.makeTaost("moving: (" + x + ", " + y + ")",context);
+                Util.makeTaost("moving: (" + x + ", " + y + ")", context);
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i("TAG", "touched up");
-                Util.makeTaost("touched up",context);
+                Util.makeTaost("touched up", context);
                 break;
         }
 
         return true;
 
-    }
-
-    public Point convertCoordinates(double x, double y) {
-        //added 1 because of margin
-        double scaleX = (x + Util.MARGIN_LEFT) / FOOR_WIDE;
-        double scaleY = (y + Util.MARGIN_UP) / FLOOR_HEIGHT;
-
-        int newX = (int) (scaleX * NUM_BLOCKS_WIDE);
-        int newY = (int) (scaleY * numBlocksHigh);
-
-        return new Point(newX,newY);
     }
 }

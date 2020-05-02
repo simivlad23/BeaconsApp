@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.util.Log;
 
@@ -18,7 +19,7 @@ import java.util.TimerTask;
 public class Beacons {
 
     private static final String TAG = "BLE-BEACON";
-    private static final double WEIGHTED_VALUE = 0.75;
+    public static final double WEIGHTED_VALUE = 0.75;
 
     private BluetoothGatt bluetoothGatt;
     private BluetoothDevice bluetoothDevice;
@@ -148,6 +149,29 @@ public class Beacons {
         distances.clear();
         this.distance = average;
         return average;
+    }
+
+    public void smootingAlgoritm(ScanResult result){
+
+        double newRssiValue = WEIGHTED_VALUE * result.getRssi() + rssiRecords.getLast() * (1 - WEIGHTED_VALUE);
+
+        distanceFormula2 = Util.getDistance2(newRssiValue, -61);
+        distanceFormula3 = Util.getDistance3(newRssiValue, -61);
+
+        rssiRecords.addLast(newRssiValue);
+
+        if (rssiRecords.size() > 10) {
+            rssiRecords.removeFirst();
+        }
+
+
+       // Util.recordsList.add(new RssiRecord(bluetoothDevice.getName(), bluetoothDevice.getAddress(), newRssiValue, distanceCalculated3, date));
+        //distances.add(distanceCalculated);
+        distances.add(distanceFormula3);
+
+        setAverageBleRssi();
+        distanceAverage = Util.getDistance3(averageRssiValue, -61);
+        rssiValue = Double.parseDouble(Util.df.format(newRssiValue));
     }
 
     public BluetoothGatt getBluetoothGatt() {

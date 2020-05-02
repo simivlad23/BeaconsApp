@@ -1,13 +1,20 @@
 package com.example.myapplication;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +23,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -36,11 +44,12 @@ import static android.bluetooth.BluetoothProfile.GATT;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "BLE-app";
+    private final static int REQUEST_ENABLE_BT = 1;
 
     private ListView listView;
     private ArrayList<String> mDeviceList = new ArrayList<>();
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    private WifiManager wifiManager;
+    private BluetoothLeScanner bluetoothLeScanner;
 
     private ArrayAdapter<String> listAdapter;
     private TextView textViewLat;
@@ -52,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
 
         listView = findViewById(R.id.listView);
         listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mDeviceList);
@@ -71,11 +80,7 @@ public class MainActivity extends AppCompatActivity {
         buttonStartDetect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                for (BluetoothDevice bt : pairedDevices) {
-                    Beacons beacons = new Beacons(bt, MainActivity.this);
-                    beacons.connectToGATT();
-                    Util.beaconsList.add(beacons);
-                }
+                startScanning();
 
                 final Timer timier = new Timer();
                 timier.scheduleAtFixedRate(new TimerTask() {
@@ -85,18 +90,23 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 mDeviceList.clear();
-                                for (Beacons beacons : Util.beaconsList) {
-                                    mDeviceList.add(beacons.getBluetoothDevice().getName() + "\n" +
-                                            "rssi: " + beacons.getRssiValue() + ";\ndis3: " + beacons.getDistanceFormula3() + "\ndis2: " + beacons.getDistanceFormula2() + "\n" +
-                                            "mean rssi: " + beacons.getAverageRssiValue() + ";\ndis3: " + beacons.getDistanceAverage() + "\ndis2: " + beacons.getDistanceFormula2());
+                                for (Beacons beacons : Util.beaconsMap.values()) {
+                                    mDeviceList.add(beacons.getBluetoothDevice().getName() +
+                                            " rssi mean: " + beacons.getAverageRssiValue() +
+                                            " rssi now: " + beacons.getRssiValue() + "\n" +
+                                            " dis2: " + beacons.getDistanceFormula2() + " --- " +
+                                            " dis3: " + beacons.getDistanceFormula3() + "\n" +
+                                            " dis2Mean: " + Util.getDistance2(beacons.getAverageRssiValue(), -62) +
+                                            " dis3Mean: " + Util.getDistance3(beacons.getAverageRssiValue(), -62)
+                                    );
                                     listAdapter.notifyDataSetChanged();
-
                                 }
+
                             }
                         });
 
                     }
-                }, 500, 300);
+                }, 10, 100);
 
 
                 Util.makeTaost("Starting reading", getApplicationContext());
@@ -106,9 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         buttonStopRead.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                for (Beacons beacons : Util.beaconsList) {
-                    beacons.stopReacording();
-                }
+                stopScanning();
                 Util.makeTaost("Stop reading", getApplicationContext());
                 export();
             }
@@ -128,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
         buttonGetLivePosition.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
+                Util.initBeaconAndTestPositions();
                 Intent myIntent = new Intent(MainActivity.this, LivePosition.class);
                 MainActivity.this.startActivity(myIntent);
 
@@ -162,6 +171,86 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        enableBluetoothAndLocation();
+
+    }
+
+    private ScanCallback leScanCallback = new ScanCallback() {
+
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+
+            if (isDuplicate(result.getDevice().getAddress())) {
+                synchronized (result.getDevice()) {
+
+                    Util.beaconsMap.get(result.getDevice().getAddress()).smootingAlgoritm(result);
+//
+//                    Util.beaconsMap.get(result.getDevice().getAddress()).rssiRecords.add((double) result.getRssi());
+//                    Util.beaconsMap.get(result.getDevice().getAddress()).setRssiValue(result.getRssi());
+//
+//                    Util.beaconsMap.get(result.getDevice().getAddress()).setDistanceFormula2(Util.getDistance2(result.getRssi(), Util.TX_POWER));
+//                    Util.beaconsMap.get(result.getDevice().getAddress()).setDistanceFormula3(Util.getDistance3(result.getRssi(), Util.TX_POWER));
+                }
+            } else {
+                synchronized (result.getDevice()) {
+                    Beacons beacons = new Beacons(result.getDevice(), getApplicationContext());
+                    beacons.setRssiValue(result.getRssi());
+                    Util.beaconsMap.put(result.getDevice().getAddress(), beacons);
+                    Util.setBeaconsPosition();
+
+                }
+            }
+        }
+
+    };
+
+    private boolean isDuplicate(String deviceAddress) {
+        if (Util.beaconsMap.containsKey(deviceAddress))
+            return true;
+        else
+            return false;
+    }
+
+    public void startScanning() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<ScanFilter> filters_v2 = new ArrayList<>();
+                ScanFilter scanFilter1 = new ScanFilter.Builder()
+                        .setDeviceAddress("C7:7E:A2:BD:51:4C").build();
+                ScanFilter scanFilter2 = new ScanFilter.Builder()
+                        .setDeviceAddress("D1:A4:D2:15:51:00").build();
+                ScanFilter scanFilter3 = new ScanFilter.Builder()
+                        .setDeviceAddress("D2:83:6A:5E:AB:F8").build();
+                ScanFilter scanFilter4 = new ScanFilter.Builder()
+                        .setDeviceAddress("C0:08:B4:0E:37:0E").build();
+
+                filters_v2.add(scanFilter1);
+                filters_v2.add(scanFilter2);
+                filters_v2.add(scanFilter3);
+                filters_v2.add(scanFilter4);
+
+                ScanSettings setings = new ScanSettings.Builder()
+                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                        .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                        .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                        .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT)
+                        .setReportDelay(0L)
+                        .build();
+
+                bluetoothLeScanner.startScan(filters_v2, setings, leScanCallback);
+
+            }
+        });
+    }
+
+    public void stopScanning() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                bluetoothLeScanner.stopScan(leScanCallback);
+            }
+        });
     }
 
     public void export() {
@@ -195,4 +284,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    public void enableBluetoothAndLocation() {
+        if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        }
+
+        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("This app needs location access");
+            builder.setMessage("Please grant location access so this app can detect peripherals.");
+            builder.setPositiveButton(android.R.string.ok, null);
+            builder.show();
+        }
+    }
+
+
+
 }

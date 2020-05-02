@@ -1,9 +1,11 @@
 package com.example.myapplication;
 
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 //import android.graphics.Point;
 //import android.icu.text.Edits;
 //import android.net.wifi.ScanResult;
+import android.graphics.Point;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,14 +16,13 @@ import com.lemmingapex.trilateration.TrilaterationFunction;
 
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Util {
 
@@ -29,15 +30,28 @@ public class Util {
 
     private static final double RF_A = 23; // the absolute energy which is represent by dBm at a distance of 1 meter from the transmitter
     private static final double RF_N = 2.3; // n is the signal transmission constant
-    private static final long FIVE_SECOND_MILISECOND = 10000l;
+    public static final int TX_POWER = -61;
+    public static final long FIVE_SECOND_MILISECOND = 10000l;
     public static final double MARGIN_UP = 0.85;
     public static final double MARGIN_LEFT = 0.85;
+    public static int SCREEN_X = 1080;
+    public static int SCREEN_y = 2107;
 
+    public static double FOOR_WIDE = 8.7;
+    public static double FLOOR_HEIGHT = 14.3 ;
+    public static int NUM_BLOCKS_WIDE = 100;
+    public static int NUM_BLOCK_HIGH = 50;
+    public static int BLOCK_SIZE = 50;
+
+
+    public static Map<String, Beacons> beaconsMap = new HashMap<>();
     public static List<Beacons> beaconsList = new ArrayList<>();
     public static DecimalFormat df = new DecimalFormat("#.000");
     public static List<RssiRecord> recordsList = new ArrayList<>();
     public static List<Position> positionsList = new ArrayList<>();
-    public static List<Position> testPosition = new ArrayList<>();
+
+    public static List<Point> beaconsPosition = new ArrayList<>();
+    public static List<Point> testPosition = new ArrayList<>();
 
 
     public static double getDistance(double rssi, double txPower) {
@@ -52,14 +66,14 @@ public class Util {
     public static double getDistance3(double rssi, int txPower) {
 
         //hard coded power value. Usually ranges between -59 to -65
-
         if (rssi == 0) {
             return -1.0;
         }
 
         double ratio = rssi * 1.0 / txPower;
         if (ratio < 1.0) {
-            return Math.pow(ratio, 10);
+            double distance = Math.pow(ratio, 10);
+            return Double.parseDouble(df.format(distance));
         } else {
             double distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
             return Double.parseDouble(df.format(distance));
@@ -78,17 +92,21 @@ public class Util {
         return dateNow;
     }
 
-    public static Position calcutateBasedNowRssi() {
+    public static Position calcutateBasedNowRssi()  {
 
-        double[][] positions = new double[beaconsList.size()][2];
-        double[] distances = new double[beaconsList.size()];
 
-        for(int i=0;i<beaconsList.size();i++){
+        double[][] positions = new double[beaconsMap.size()][2];
+        double[] distances = new double[beaconsMap.size()];
 
-            positions[i][0] = beaconsList.get(i).getLat();
-            positions[i][1] = beaconsList.get(i).getLng();
+        int index = 0;
 
-            distances[i]= beaconsList.get(i).getDistanceFormula3();
+        for (Beacons beacons : beaconsMap.values()) {
+
+            positions[index][0] = beacons.getLat();
+            positions[index][1] = beacons.getLng();
+
+            distances[index] = beacons.getDistanceFormula3();
+            index++;
         }
 
         NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
@@ -108,15 +126,18 @@ public class Util {
 
     public static Position calcutateBasedMeanRssi() {
 
-        double[][] positions = new double[beaconsList.size()][2];
-        double[] distances = new double[beaconsList.size()];
+        double[][] positions = new double[beaconsMap.size()][2];
+        double[] distances = new double[beaconsMap.size()];
 
-        for(int i=0;i<beaconsList.size();i++){
+        int index = 0;
 
-            positions[i][0] = beaconsList.get(i).getLat();
-            positions[i][1] = beaconsList.get(i).getLng();
+        for (Beacons beacons : beaconsMap.values()) {
 
-            distances[i]= beaconsList.get(i).getDistanceAverage();
+            positions[index][0] = beacons.getLat();
+            positions[index][1] = beacons.getLng();
+
+            distances[index] = beacons.getDistanceAverage();
+            index++;
         }
 
         NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
@@ -136,7 +157,7 @@ public class Util {
 
     public static void setBeaconsPosition() {
 
-        for (Beacons beacons : beaconsList) {
+        for (Beacons beacons : beaconsMap.values()) {
             switch (beacons.getBluetoothDevice().getAddress()) {
                 case "C7:7E:A2:BD:51:4C":
                     beacons.setLat(0);
@@ -188,11 +209,33 @@ public class Util {
         Position position3 = new Position(3.0, 2.0);
         Position position4 = new Position(4.0, 1.0);
 
-        Util.positionsList.add(position1);
-        Util.positionsList.add(position2);
-        Util.positionsList.add(position3);
-        Util.positionsList.add(position4);
+        Util.testPosition.add(convertCoordinates(position1.getLat(),position1.getLng()));
+        Util.testPosition.add(convertCoordinates(position2.getLat(),position2.getLng()));
+        Util.testPosition.add(convertCoordinates(position3.getLat(),position3.getLng()));
+        Util.testPosition.add(convertCoordinates(position4.getLat(),position4.getLng()));
     }
 
+    public static void initBeaconAndTestPositions(){
+
+        BLOCK_SIZE =  SCREEN_X / NUM_BLOCKS_WIDE;
+        Util.NUM_BLOCK_HIGH = SCREEN_y / BLOCK_SIZE;
+
+        for(Beacons beacons: beaconsMap.values()){
+            Point scalePostion = convertCoordinates(beacons.getLat(),beacons.getLng());
+            beaconsPosition.add(scalePostion);
+        }
+        setTestPosition();
+    }
+
+    public static Point convertCoordinates(double x, double y) {
+        //added 1 because of margin
+        double scaleX = (x + Util.MARGIN_LEFT) / FOOR_WIDE;
+        double scaleY = (y + Util.MARGIN_UP) / FLOOR_HEIGHT;
+
+        int newX = (int) (scaleX * NUM_BLOCKS_WIDE);
+        int newY = (int) (scaleY * NUM_BLOCK_HIGH);
+
+        return new Point(newX,newY);
+    }
 
 }
