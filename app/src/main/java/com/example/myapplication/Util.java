@@ -1,10 +1,6 @@
 package com.example.myapplication;
 
-import android.bluetooth.le.ScanResult;
 import android.content.Context;
-//import android.graphics.Point;
-//import android.icu.text.Edits;
-//import android.net.wifi.ScanResult;
 import android.graphics.Point;
 import android.util.Log;
 import android.widget.Toast;
@@ -39,8 +35,8 @@ public class Util {
 
     public static double FOOR_WIDE = 8.2;
     public static double FLOOR_HEIGHT = 12;
-    public static int NUM_BLOCKS_WIDE = 100;
-    public static int NUM_BLOCK_HIGH = 50;
+    public static int NUM_BLOCKS_WIDE = 50;
+    public static int NUM_BLOCK_HIGH = 200;
     public static int BLOCK_SIZE = 50;
 
 
@@ -92,7 +88,7 @@ public class Util {
         return dateNow;
     }
 
-    public static Position calcutateBasedNowRssi()  {
+    public static Position calcutateBasedNowRssi() {
 
 
         double[][] positions = new double[beaconsMap.size()][2];
@@ -172,7 +168,7 @@ public class Util {
                     beacons.setLng(0);
                     break;
                 case "C0:08:B4:0E:37:0E":
-                    beacons.setLat(0);
+                    beacons.setLat(8.2);
                     beacons.setLng(5.2);
                     break;
                 case "C8:26:E3:CE:42:5C":
@@ -204,24 +200,24 @@ public class Util {
 
     public static void setTestPosition() {
 
-        Position position1 = new Position(1.0, 4.0);
-        Position position2 = new Position(2.0, 3.0);
-        Position position3 = new Position(3.0, 2.0);
-        Position position4 = new Position(4.0, 1.0);
+        Position position1 = new Position(4.2, 3);
+        Position position2 = new Position(7.5, 3.0);
+        Position position3 = new Position(3.0, 7.3);
+        Position position4 = new Position(4.0, 10.45);
 
-        Util.testPosition.add(convertCoordinates(position1.getLat(),position1.getLng()));
-        Util.testPosition.add(convertCoordinates(position2.getLat(),position2.getLng()));
-        Util.testPosition.add(convertCoordinates(position3.getLat(),position3.getLng()));
-        Util.testPosition.add(convertCoordinates(position4.getLat(),position4.getLng()));
+        Util.testPosition.add(convertCoordinates(position1.getLat(), position1.getLng()));
+        Util.testPosition.add(convertCoordinates(position2.getLat(), position2.getLng()));
+        Util.testPosition.add(convertCoordinates(position3.getLat(), position3.getLng()));
+        Util.testPosition.add(convertCoordinates(position4.getLat(), position4.getLng()));
     }
 
-    public static void initBeaconAndTestPositions(){
+    public static void initBeaconAndTestPositions() {
 
-        BLOCK_SIZE =  SCREEN_X / NUM_BLOCKS_WIDE;
+        BLOCK_SIZE = SCREEN_X / NUM_BLOCKS_WIDE;
         Util.NUM_BLOCK_HIGH = SCREEN_y / BLOCK_SIZE;
 
-        for(Beacons beacons: beaconsMap.values()){
-            Point scalePostion = convertCoordinates(beacons.getLat(),beacons.getLng());
+        for (Beacons beacons : beaconsMap.values()) {
+            Point scalePostion = convertCoordinates(beacons.getLat(), beacons.getLng());
             beaconsPosition.add(scalePostion);
         }
         setTestPosition();
@@ -232,10 +228,16 @@ public class Util {
         double scaleX = x / FOOR_WIDE;
         double scaleY = y / FLOOR_HEIGHT;
 
-        int newX = (int) (scaleX * NUM_BLOCKS_WIDE);
-        int newY = (int) (scaleY * NUM_BLOCK_HIGH);
+        int newXPixel = (int) (scaleX * SCREEN_X);
+        int newYPixel = (int) (scaleY * SCREEN_y);
 
-        return new Point(newX,newY);
+        int newX = (int) (newXPixel /NUM_BLOCKS_WIDE);
+        int newY = (int) (newYPixel / NUM_BLOCK_HIGH);
+
+
+
+
+        return new Point(newXPixel, newYPixel);
     }
 
 }

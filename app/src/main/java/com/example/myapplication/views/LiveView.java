@@ -82,10 +82,10 @@ public class LiveView extends SurfaceView implements Runnable {
             paint.setColor(Color.BLUE);
 
             for (Point position : Util.beaconsPosition) {
-                canvas.drawRect((position.x * Util.BLOCK_SIZE),
-                        (position.y * Util.BLOCK_SIZE),
-                        (position.x * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
-                        (position.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+                canvas.drawRect((position.x ),
+                        (position.y ),
+                        (position.x ) + Util.BLOCK_SIZE,
+                        (position.y ) + Util.BLOCK_SIZE,
                         paint);
             }
 
@@ -93,10 +93,10 @@ public class LiveView extends SurfaceView implements Runnable {
             paint.setColor(Color.YELLOW);
 
             for (Point position : Util.testPosition) {
-                canvas.drawRect((position.x * Util.BLOCK_SIZE),
-                        (position.y * Util.BLOCK_SIZE),
-                        (position.x * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
-                        (position.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+                canvas.drawRect((position.x ),
+                        (position.y ),
+                        (position.x ) + Util.BLOCK_SIZE,
+                        (position.y ) + Util.BLOCK_SIZE,
                         paint);
             }
 
@@ -105,10 +105,10 @@ public class LiveView extends SurfaceView implements Runnable {
             Position position = Util.calcutateBasedMeanRssi();
             Point scalePositionNow = Util.convertCoordinates(position.getLat(), position.getLng());
 
-            canvas.drawRect(scalePositionNow.x * Util.BLOCK_SIZE,
-                    (scalePositionNow.y * Util.BLOCK_SIZE),
-                    (scalePositionNow.x * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
-                    (scalePositionNow.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+            canvas.drawRect(scalePositionNow.x ,
+                    (scalePositionNow.y ),
+                    (scalePositionNow.x ) + Util.BLOCK_SIZE,
+                    (scalePositionNow.y ) + Util.BLOCK_SIZE,
                     paint);
 
 
@@ -117,10 +117,10 @@ public class LiveView extends SurfaceView implements Runnable {
             Position position2 = Util.calcutateBasedNowRssi();
             Point scalePositionNow2 = Util.convertCoordinates(position2.getLat(), position2.getLng());
 
-            canvas.drawRect(scalePositionNow2.x * Util.BLOCK_SIZE,
-                    (scalePositionNow2.y * Util.BLOCK_SIZE),
-                    (scalePositionNow2.x * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
-                    (scalePositionNow2.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
+            canvas.drawRect(scalePositionNow2.x ,
+                    (scalePositionNow2.y ),
+                    (scalePositionNow2.x ) + Util.BLOCK_SIZE,
+                    (scalePositionNow2.y ) + Util.BLOCK_SIZE,
                     paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
