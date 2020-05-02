@@ -21,7 +21,6 @@ import java.util.Iterator;
 
 public class LiveView extends SurfaceView implements Runnable {
 
-
     private Thread thread = null;
     private Context context;
 
@@ -36,18 +35,15 @@ public class LiveView extends SurfaceView implements Runnable {
     private Paint paint;
     private Drawable flooriamge;
 
-
     public LiveView(Context context, Point size) {
         super(context);
         this.context = context;
-        flooriamge = context.getResources().getDrawable(R.drawable.house_plan);
-
+        flooriamge = context.getResources().getDrawable(R.drawable.house_plan_crop);
 
         surfaceHolder = getHolder();
         paint = new Paint();
 
         nextFrameTime = System.currentTimeMillis();
-
     }
 
     @Override
@@ -57,7 +53,6 @@ public class LiveView extends SurfaceView implements Runnable {
             if (updateRequired()) {
                 draw();
             }
-
         }
     }
 
@@ -76,16 +71,12 @@ public class LiveView extends SurfaceView implements Runnable {
     }
 
     public void draw() {
-
-        // Get a lock on the canvas
         if (surfaceHolder.getSurface().isValid()) {
             canvas = surfaceHolder.lockCanvas();
             Rect imageBounds = canvas.getClipBounds();
 
             flooriamge.setBounds(imageBounds);
             flooriamge.draw(canvas);
-
-
 
             //####################  DRAW BEACONS POSITION ##################
             paint.setColor(Color.BLUE);
@@ -108,22 +99,6 @@ public class LiveView extends SurfaceView implements Runnable {
                         (position.y * Util.BLOCK_SIZE) + Util.BLOCK_SIZE,
                         paint);
             }
-
-//            for (Beacons beacons : Util.beaconsMap.values()) {
-//
-//                double beaconX = beacons.getLat();
-//                double beaconY = beacons.getLng();
-//                Point scalePositionBeacon = convertCoordinates(beaconX, beaconY);
-//
-//                Log.d("POS_BEACON", " x= " + scalePositionBeacon.x * blockSize + " ; y=" + scalePositionBeacon.y * blockSize);
-//
-//                canvas.drawRect(scalePositionBeacon.x * blockSize,
-//                        (scalePositionBeacon.y * blockSize),
-//                        (scalePositionBeacon.x * blockSize) + blockSize,
-//                        (scalePositionBeacon.y * blockSize) + blockSize,
-//                        paint);
-//            }
-
 
             //####################  DRAW CURRENT POSITION  BASED MEAN RSSI VALUE ####################
             paint.setColor(Color.argb(255, 255, 0, 0));
@@ -153,7 +128,6 @@ public class LiveView extends SurfaceView implements Runnable {
     }
 
     public boolean updateRequired() {
-
         if (nextFrameTime <= System.currentTimeMillis()) {
             nextFrameTime = System.currentTimeMillis() + MILLIS_PER_SECOND / FPS;
             return true;

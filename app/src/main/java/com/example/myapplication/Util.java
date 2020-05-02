@@ -37,8 +37,8 @@ public class Util {
     public static int SCREEN_X = 1080;
     public static int SCREEN_y = 2107;
 
-    public static double FOOR_WIDE = 8.7;
-    public static double FLOOR_HEIGHT = 14.3 ;
+    public static double FOOR_WIDE = 8.2;
+    public static double FLOOR_HEIGHT = 12;
     public static int NUM_BLOCKS_WIDE = 100;
     public static int NUM_BLOCK_HIGH = 50;
     public static int BLOCK_SIZE = 50;
@@ -229,8 +229,8 @@ public class Util {
 
     public static Point convertCoordinates(double x, double y) {
         //added 1 because of margin
-        double scaleX = (x + Util.MARGIN_LEFT) / FOOR_WIDE;
-        double scaleY = (y + Util.MARGIN_UP) / FLOOR_HEIGHT;
+        double scaleX = x / FOOR_WIDE;
+        double scaleY = y / FLOOR_HEIGHT;
 
         int newX = (int) (scaleX * NUM_BLOCKS_WIDE);
         int newY = (int) (scaleY * NUM_BLOCK_HIGH);
