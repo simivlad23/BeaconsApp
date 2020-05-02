@@ -2,8 +2,6 @@ package com.example.myapplication;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -13,10 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -34,11 +30,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static android.bluetooth.BluetoothProfile.GATT;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -182,14 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (isDuplicate(result.getDevice().getAddress())) {
                 synchronized (result.getDevice()) {
-
                     Util.beaconsMap.get(result.getDevice().getAddress()).smootingAlgoritm(result);
-//
-//                    Util.beaconsMap.get(result.getDevice().getAddress()).rssiRecords.add((double) result.getRssi());
-//                    Util.beaconsMap.get(result.getDevice().getAddress()).setRssiValue(result.getRssi());
-//
-//                    Util.beaconsMap.get(result.getDevice().getAddress()).setDistanceFormula2(Util.getDistance2(result.getRssi(), Util.TX_POWER));
-//                    Util.beaconsMap.get(result.getDevice().getAddress()).setDistanceFormula3(Util.getDistance3(result.getRssi(), Util.TX_POWER));
                 }
             } else {
                 synchronized (result.getDevice()) {

@@ -12,6 +12,8 @@ import com.lemmingapex.trilateration.TrilaterationFunction;
 
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -81,15 +83,13 @@ public class Util {
         toast.show();
     }
 
-    public static Date convertFromEpochToDate(long time) {
-
+    public static Date convertFromEpochToDate() {
         long timeNow = System.currentTimeMillis();
         Date dateNow = new Date(timeNow);
         return dateNow;
     }
 
     public static Position calcutateBasedNowRssi() {
-
 
         double[][] positions = new double[beaconsMap.size()][2];
         double[] distances = new double[beaconsMap.size()];
@@ -111,9 +111,9 @@ public class Util {
         // the answer
         double[] calculatedPosition = optimum.getPoint().toArray();
 
-        // error and geometry information
-        //RealVector standardDeviation = optimum.getSigma(0);
-        //RealMatrix covarianceMatrix = optimum.getCovariances(0);
+         //error and geometry information
+        RealVector standardDeviation = optimum.getSigma(0);
+        RealMatrix covarianceMatrix = optimum.getCovariances(0);
 
         Log.i("NOW_POSITION", "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
         return new Position(Double.parseDouble(df.format(calculatedPosition[0])), Double.parseDouble(df.format(calculatedPosition[1])));
@@ -143,8 +143,8 @@ public class Util {
         double[] calculatedPosition = optimum.getPoint().toArray();
 
         // error and geometry information
-        //RealVector standardDeviation = optimum.getSigma(0);
-        //RealMatrix covarianceMatrix = optimum.getCovariances(0);
+        RealVector standardDeviation = optimum.getSigma(0);
+        RealMatrix covarianceMatrix = optimum.getCovariances(0);
 
         Log.i("MEAN_POSITION", "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
         return new Position(Double.parseDouble(df.format(calculatedPosition[0])), Double.parseDouble(df.format(calculatedPosition[1])));
@@ -224,18 +224,11 @@ public class Util {
     }
 
     public static Point convertCoordinates(double x, double y) {
-        //added 1 because of margin
         double scaleX = x / FOOR_WIDE;
         double scaleY = y / FLOOR_HEIGHT;
 
         int newXPixel = (int) (scaleX * SCREEN_X);
         int newYPixel = (int) (scaleY * SCREEN_y);
-
-        int newX = (int) (newXPixel /NUM_BLOCKS_WIDE);
-        int newY = (int) (newYPixel / NUM_BLOCK_HIGH);
-
-
-
 
         return new Point(newXPixel, newYPixel);
     }

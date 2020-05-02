@@ -65,7 +65,7 @@ public class Beacons {
                     @Override
                     public void run() {
                          boolean rssiReadStatus  = bluetoothGatt.readRemoteRssi();
-                         Log.i("STATUS READ ", "Request rssi vale from device "+ bluetoothDevice.getAddress() + "   at time: " + Util.convertFromEpochToDate(0) + "and staus is "+ rssiReadStatus );
+                         Log.i("STATUS READ ", "Request rssi vale from device "+ bluetoothDevice.getAddress() + "   at time: " + Util.convertFromEpochToDate() + "and staus is "+ rssiReadStatus );
                     }
                 },0, 50);
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
@@ -85,7 +85,7 @@ public class Beacons {
                 String deviceAddress = gatt.getDevice().getAddress();
 
 
-                Date date = Util.convertFromEpochToDate(0);
+                Date date = Util.convertFromEpochToDate();
 
                 double newRssiValue = WEIGHTED_VALUE * rssi + rssiRecords.getLast() * (1 - WEIGHTED_VALUE);
 
@@ -155,8 +155,8 @@ public class Beacons {
 
         double newRssiValue = WEIGHTED_VALUE * result.getRssi() + rssiRecords.getLast() * (1 - WEIGHTED_VALUE);
 
-        distanceFormula2 = Util.getDistance2(newRssiValue, -61);
-        distanceFormula3 = Util.getDistance3(newRssiValue, -61);
+        distanceFormula2 = Util.getDistance2(newRssiValue, Util.TX_POWER);
+        distanceFormula3 = Util.getDistance3(newRssiValue, Util.TX_POWER);
 
         rssiRecords.addLast(newRssiValue);
 
