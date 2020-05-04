@@ -7,6 +7,7 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.myapplication.model.BeaconRecord;
 import com.example.myapplication.model.RssiRecord;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class Beacons {
 
     private BluetoothGatt bluetoothGatt;
     private BluetoothDevice bluetoothDevice;
+    private BeaconRecord beaconRecord;
     private Context context;
     private Timer timier;
 
@@ -42,6 +44,7 @@ public class Beacons {
 
     public Beacons(BluetoothDevice bt, Context cnt) {
         rssiRecords.addLast(-50.0);
+        beaconRecord = new BeaconRecord();
         this.bluetoothDevice = bt;
         this.context = cnt;
     }
@@ -172,6 +175,16 @@ public class Beacons {
         setAverageBleRssi();
         distanceAverage = Util.getDistance3(averageRssiValue, -61);
         rssiValue = Double.parseDouble(Util.df.format(newRssiValue));
+
+        beaconRecord.setTimeReacord(Util.convertFromEpochToDate());
+        beaconRecord.setReadRssi(result.getRssi());
+        beaconRecord.setSmootRssi(newRssiValue);
+        beaconRecord.setMeanRssi(averageRssiValue);
+        beaconRecord.setSmootDistance(distanceFormula3);
+        beaconRecord.setMeanDistance(distanceAverage);
+
+        Util.db.collection("beacons_records").add(beaconRecord);
+
     }
 
     public BluetoothGatt getBluetoothGatt() {

@@ -25,6 +25,7 @@ import androidx.core.content.FileProvider;
 
 import com.example.myapplication.model.Position;
 import com.example.myapplication.model.RssiRecord;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Util.db = FirebaseFirestore.getInstance();
 
         bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
 

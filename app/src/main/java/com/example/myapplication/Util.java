@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.model.Position;
 import com.example.myapplication.model.RssiRecord;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
 
@@ -49,6 +50,7 @@ public class Util {
     public static double PIXELS_PER_CM_X = SCREEN_X / FOOR_WIDE_CM;
     public static double PIXELS_PER_CM_Y = SCREEN_Y / FLOOR_HEIGHT_CM;
 
+    public static FirebaseFirestore db;
 
     public static Map<String, Beacons> beaconsMap = new HashMap<>();
     public static List<Beacons> beaconsList = new ArrayList<>();

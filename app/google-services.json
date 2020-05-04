@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1035821316829",
+    "firebase_url": "https://indoorlocationapp-37ff5.firebaseio.com",
+    "project_id": "indoorlocationapp-37ff5",
+    "storage_bucket": "indoorlocationapp-37ff5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035821316829:android:ff9c2633ce5eeddcc5f934",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035821316829-n1atm3t593gu69i3hqvp98o9b0tp3ucs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myapplication",
+            "certificate_hash": "7c8a8f8a0f3f7f47c3cb46b85cea5d040f2c1cc6"
+          }
+        },
+        {
+          "client_id": "1035821316829-gdjskop57hjumjb44kj6cqgsmfsnmamc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCh4FlufNhZIgbeu4Eyz9fsc2tjw3iiw4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035821316829-gdjskop57hjumjb44kj6cqgsmfsnmamc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
