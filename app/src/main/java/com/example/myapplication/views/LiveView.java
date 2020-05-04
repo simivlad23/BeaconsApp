@@ -88,7 +88,7 @@ public class LiveView extends SurfaceView implements Runnable {
             }
 
             //####################  DRAW TEST POSITION ####################
-            paint.setColor(Color.YELLOW);
+            paint.setColor(Color.CYAN);
             for (Point position : Util.testPosition) {
                 canvas.drawRect(position.x,
                         position.y,
@@ -119,6 +119,13 @@ public class LiveView extends SurfaceView implements Runnable {
                     (scalePositionNow2.x) + Util.BLOCK_SIZE,
                     (scalePositionNow2.y) + Util.BLOCK_SIZE,
                     paint);
+
+            int x = (int) position.getLat();
+            int y = (int) position.getLng();
+
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(30);
+            canvas.drawText("X:"+ x+ "  y:"+ y, (float) scalePositionNow.x, (float)scalePositionNow.y, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }

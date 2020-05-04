@@ -196,7 +196,7 @@ public class Util {
                     beacons.setLng(0);
                     break;
                 case "C0:08:B4:0E:37:0E":
-                    beacons.setLat(820);
+                    beacons.setLat(0);
                     beacons.setLng(510);
                     break;
                 case "C8:26:E3:CE:42:5C":
@@ -228,10 +228,10 @@ public class Util {
 
     public static void setTestPosition() {
 
-        Position position1 = new Position(0, 0);
-        Position position2 = new Position(410, 0);
-        Position position3 = new Position(410, 510);
-        Position position4 = new Position(0, 510);
+        Position position1 = new Position(100, 100);
+        Position position2 = new Position(200, 200);
+        Position position3 = new Position(300, 300);
+        Position position4 = new Position(300, 400);
 
         Util.testPosition.add(convertFromCmToPixels(position1.getLat(), position1.getLng()));
         Util.testPosition.add(convertFromCmToPixels(position2.getLat(), position2.getLng()));
