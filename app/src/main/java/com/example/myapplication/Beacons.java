@@ -156,8 +156,12 @@ public class Beacons {
 
     public void smootingAlgoritm(ScanResult result){
 
-        double newRssiValue = WEIGHTED_VALUE * result.getRssi() + rssiRecords.getLast() * (1 - WEIGHTED_VALUE);
-
+        double newRssiValue;
+        if(Math.abs(result.getRssi() - rssiValue) >10) {
+            newRssiValue = averageRssiValue;
+        }else {
+            newRssiValue = WEIGHTED_VALUE * result.getRssi() + rssiRecords.getLast() * (1 - WEIGHTED_VALUE);
+        }
         distanceFormula2 = Util.getDistance2(newRssiValue, Util.TX_POWER);
         distanceFormula3 = Util.getDistance3(newRssiValue, Util.TX_POWER);
 
@@ -183,7 +187,7 @@ public class Beacons {
         beaconRecord.setSmootDistance(distanceFormula3);
         beaconRecord.setMeanDistance(distanceAverage);
 
-        Util.db.collection("beacons_records").add(beaconRecord);
+        //Util.db.collection("beacons_records").add(beaconRecord);
 
     }
 
