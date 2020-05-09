@@ -31,6 +31,7 @@ public class Beacons {
     private double lat = 0.0;
     private double lng = 0.0;
 
+    private double nowRssiRead = 0.0;
     private double rssiValue = 0.0;
     private double averageRssiValue = 1.0;
     private double distanceFormula1 = 1.0;
@@ -155,6 +156,7 @@ public class Beacons {
     }
 
     public void smootingAlgoritm(ScanResult result){
+
 
         double newRssiValue;
         if(Math.abs(result.getRssi() - rssiValue) >10) {
