@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         buttonStartCollecting.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
+                Util.initBeaconAndTestPositions();
                 Intent myIntent = new Intent(MainActivity.this, DataCollectingActivity.class);
                 MainActivity.this.startActivity(myIntent);
                 Util.makeTaost("Start collecting data", getApplicationContext());
@@ -288,7 +289,5 @@ public class MainActivity extends AppCompatActivity {
             builder.show();
         }
     }
-
-
 
 }

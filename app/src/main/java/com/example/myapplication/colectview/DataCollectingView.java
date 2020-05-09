@@ -1,72 +1,52 @@
-package com.example.myapplication.views;
+package com.example.myapplication.colectview;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.example.myapplication.Beacons;
-import com.example.myapplication.R;
 import com.example.myapplication.Util;
-import com.example.myapplication.model.Position;
 
-import java.util.Iterator;
-
-public class LiveView extends SurfaceView implements Runnable {
+public class DataCollectingView extends SurfaceView implements Runnable {
 
     private Thread thread = null;
     private Context context;
 
-    private long nextFrameTime;
-    private final long FPS = 10;
-    private final long MILLIS_PER_SECOND = 1000;
+    public int presOnScreenX=0;
+    public int presOnScreeny=0;
 
-    private volatile boolean isPlaying;
+    private volatile boolean isReading;
+    public volatile boolean update = false;
 
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
     private Paint paint;
-    private Drawable flooriamge;
 
-    public LiveView(Context context, Point size) {
+    public DataCollectingView(Context context) {
         super(context);
-        this.context = context;
+        init(context);
+    }
 
+    public DataCollectingView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public DataCollectingView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    public void init(Context context){
+        this.context = context;
         surfaceHolder = getHolder();
         paint = new Paint();
 
-        nextFrameTime = System.currentTimeMillis();
-    }
-
-    @Override
-    public void run() {
-
-        while (isPlaying) {
-            if (updateRequired()) {
-                draw();
-            }
-        }
-    }
-
-    public void pause() {
-        isPlaying = false;
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-        }
-    }
-
-    public void resume() {
-        isPlaying = true;
-        thread = new Thread(this);
-        thread.start();
     }
 
     public void draw() {
@@ -77,7 +57,6 @@ public class LiveView extends SurfaceView implements Runnable {
 
             //####################  DRAW BEACONS POSITION ##################
             paint.setColor(Color.BLUE);
-
             for (Point position : Util.beaconsPosition) {
                 canvas.drawRect((position.x),
                         (position.y),
@@ -96,46 +75,20 @@ public class LiveView extends SurfaceView implements Runnable {
                         paint);
             }
 
-            //####################  DRAW CURRENT POSITION  BASED MEAN RSSI VALUE ####################
+            //####################  DRAW TOUCH POSITION ####################
             paint.setColor(Color.argb(255, 255, 0, 0));
-            Position position = Util.calcutateBasedMeanRssi();
-            Point scalePositionNow = Util.convertFromCmToPixels(position.getLat(), position.getLng());
-
-            canvas.drawRect(scalePositionNow.x,
-                    (scalePositionNow.y),
-                    (scalePositionNow.x) + Util.BLOCK_SIZE,
-                    (scalePositionNow.y) + Util.BLOCK_SIZE,
+            canvas.drawRect(presOnScreenX ,
+                    presOnScreeny ,
+                    presOnScreenX + Util.BLOCK_SIZE,
+                    presOnScreeny  + Util.BLOCK_SIZE,
                     paint);
 
-
-            //####################  DRAW CURRENT POSITION  ####################
-            paint.setColor(Color.argb(255, 0, 255, 0));
-            Position position2 = Util.calcutateBasedNowRssi();
-            Point scalePositionNow2 = Util.convertFromCmToPixels(position2.getLat(), position2.getLng());
-
-            canvas.drawRect(scalePositionNow2.x,
-                    (scalePositionNow2.y),
-                    (scalePositionNow2.x) + Util.BLOCK_SIZE,
-                    (scalePositionNow2.y) + Util.BLOCK_SIZE,
-                    paint);
-
-            int x = (int) position.getLat();
-            int y = (int) position.getLng();
-
-            paint.setColor(Color.BLACK);
-            paint.setTextSize(30);
-            canvas.drawText("X:"+ x+ "  y:"+ y, (float) scalePositionNow.x, (float)scalePositionNow.y, paint);
+            paint.setColor(Color.RED);
+            paint.setTextSize(40);
+            canvas.drawText("X:"+ presOnScreenX+ "  y:"+ presOnScreeny, (float) presOnScreenX, (float)presOnScreeny, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
-    }
-
-    public boolean updateRequired() {
-        if (nextFrameTime <= System.currentTimeMillis()) {
-            nextFrameTime = System.currentTimeMillis() + MILLIS_PER_SECOND / FPS;
-            return true;
-        }
-        return false;
     }
 
     public void initFloorPlan(Canvas canvas) {
@@ -186,23 +139,47 @@ public class LiveView extends SurfaceView implements Runnable {
         // last horizontal line
         canvas.drawLine(point3.x, point3.y - offsetWall, Util.SCREEN_X, point3.y - offsetWall, paint);
 
+    }
 
+    @Override
+    public void run() {
+        while (isReading) {
+            if (update) {
+                draw();
+                update=false;
+            }
+
+        }
+    }
+
+    public void pause() {
+        isReading = false;
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+        }
+    }
+
+    public void resume() {
+        isReading = true;
+        thread = new Thread(this);
+        thread.start();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
 
-        int x = (int) motionEvent.getX();
-        int y = (int) motionEvent.getY();
-
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.i("TAG", "moving: (" + x + ", " + y + ")");
-                Util.makeTaost("moving: (" + x + ", " + y + ")", context);
+                presOnScreenX = (int) motionEvent.getX();
+                presOnScreeny =  (int) motionEvent.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                update=true;
                 break;
         }
-
         return true;
-
     }
 }

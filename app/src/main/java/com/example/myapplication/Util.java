@@ -81,10 +81,10 @@ public class Util {
         double ratio = rssi * 1.0 / txPower;
         if (ratio < 1.0) {
             double distance = Math.pow(ratio, 10);
-            return distance*100;
+            return distance * 100;
         } else {
             double distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-            return distance*100;
+            return distance * 100;
         }
     }
 
@@ -255,21 +255,17 @@ public class Util {
 
     public static Point convertFromCmToPixels(double x, double y) {
 
-        int newXPixel = (int) ((x+ MARGIN_LEFT) * PIXELS_PER_CM_X);
-        int newYPixel = (int) ((y+ MARGIN_UP) * PIXELS_PER_CM_Y);
+        int newXPixel = (int) ((x + MARGIN_LEFT) * PIXELS_PER_CM_X);
+        int newYPixel = (int) ((y + MARGIN_UP) * PIXELS_PER_CM_Y);
 
         return new Point(newXPixel, newYPixel);
     }
 
+    public static Point convertFromPixelToCm(double x, double y) {
 
-    public static Point convertCoordinates(double x, double y) {
-        double scaleX = x / FOOR_WIDE;
-        double scaleY = y / FLOOR_HEIGHT;
-
-        int newXPixel = (int) (scaleX * SCREEN_X);
-        int newYPixel = (int) (scaleY * SCREEN_Y);
+        int newXPixel = (int) ((x / PIXELS_PER_CM_X) - MARGIN_UP);
+        int newYPixel = (int) ((y / PIXELS_PER_CM_Y) - MARGIN_LEFT);
 
         return new Point(newXPixel, newYPixel);
     }
-
 }

@@ -130,7 +130,6 @@ public class Beacons {
     }
 
     public double setAverageBleRssi() {
-        //TODO delete min and max
         double sum = 0.0;
         for (Double rssi : rssiRecords) {
             sum += rssi;
