@@ -140,6 +140,20 @@ public class DataCollectingView extends SurfaceView implements Runnable {
         // last horizontal line
         canvas.drawLine(point3.x, point3.y - offsetWall, Util.SCREEN_X, point3.y - offsetWall, paint);
 
+
+        //######### DRAW GRID MAP  #########
+        paint.setStrokeWidth(1);
+        Point origin = Util.convertFromCmToPixels(0,0);
+        for (int i = 0; i <= Util.FOOR_WIDE_CM; i = i + 50) {
+            double pixel = Util.PIXELS_PER_CM_X * i;
+            canvas.drawLine((float) (origin.x+ pixel), 0, (float) (origin.x + pixel), Util.SCREEN_Y, paint);
+        }
+        for (int i = 0; i <= Util.FLOOR_HEIGHT_CM; i = i + 50) {
+            double pixel = Util.PIXELS_PER_CM_Y* i;
+            canvas.drawLine(0, (float) (origin.y + pixel), Util.SCREEN_X,(float) (origin.y + pixel), paint);
+        }
+
+
     }
 
     @Override
