@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.colectview.DataCollectingView;
 import com.example.myapplication.model.MLReacord;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class DataCollectingActivity extends AppCompatActivity {
 
     DataCollectingView dataCollectingView;
@@ -19,6 +22,8 @@ public class DataCollectingActivity extends AppCompatActivity {
     ImageButton buttonLeft;
     ImageButton buttonRight;
     ImageButton buttonSend;
+    Timer timier2;
+    Timer timier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,20 +79,46 @@ public class DataCollectingActivity extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Point point = Util.convertFromPixelToCm(dataCollectingView.presOnScreenX, dataCollectingView.presOnScreeny);
-                Util.makeTaost("Change the position and wait 5 sec", getApplicationContext());
-                Log.i("COLECT LOCATION", "x= " + point.x + "   y= " + point.y);
 
-                MLReacord mlReacord = new MLReacord();
-                mlReacord.setTimeReacord(Util.convertFromEpochToDate());
-                mlReacord.setBeaconC7(Util.beaconsMap.get("C7:7E:A2:BD:51:4C").getAverageRssiValue());
-                mlReacord.setBeaconD2(Util.beaconsMap.get("D2:83:6A:5E:AB:F8").getAverageRssiValue());
-                mlReacord.setBeaconD1(Util.beaconsMap.get("D1:A4:D2:15:51:00").getAverageRssiValue());
-                mlReacord.setBeaconC0(Util.beaconsMap.get("C0:08:B4:0E:37:0E").getAverageRssiValue());
-                mlReacord.setX(point.x);
-                mlReacord.setY(point.y);
+                Util.makeTaost("Start Collecting", getApplicationContext());
+//                Log.i("COLECT LOCATION", "x= " + point.x + "   y= " + point.y);
 
-                Util.db.collection("rssi_beacon").add(mlReacord);
+                timier = new Timer();
+                timier.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Point point = Util.convertFromPixelToCm(dataCollectingView.presOnScreenX, dataCollectingView.presOnScreeny);
+                        MLReacord mlReacord = new MLReacord();
+                        mlReacord.setTimeReacord(Util.convertFromEpochToDate());
+                        mlReacord.setBeaconC7(Util.beaconsMap.get("C7:7E:A2:BD:51:4C").getAverageRssiValue());
+                        mlReacord.setBeaconD2(Util.beaconsMap.get("D2:83:6A:5E:AB:F8").getAverageRssiValue());
+                        mlReacord.setBeaconD1(Util.beaconsMap.get("D1:A4:D2:15:51:00").getAverageRssiValue());
+                        mlReacord.setBeaconC0(Util.beaconsMap.get("C0:08:B4:0E:37:0E").getAverageRssiValue());
+                        mlReacord.setX(point.x);
+                        mlReacord.setY(point.y);
+                        Util.db.collection("rssi_beacon").add(mlReacord);
+
+                    }
+                }, 0, 2000);
+//
+//                timier2 = new Timer();
+//                timier2.scheduleAtFixedRate(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        Point point = Util.convertFromPixelToCm(dataCollectingView.presOnScreenX, dataCollectingView.presOnScreeny);
+//                        MLReacord mlReacord = new MLReacord();
+//                        mlReacord.setTimeReacord(Util.convertFromEpochToDate());
+//                        mlReacord.setBeaconC7(Util.beaconsMap.get("C7:7E:A2:BD:51:4C").getRssiValue());
+//                        mlReacord.setBeaconD2(Util.beaconsMap.get("D2:83:6A:5E:AB:F8").getRssiValue());
+//                        mlReacord.setBeaconD1(Util.beaconsMap.get("D1:A4:D2:15:51:00").getRssiValue());
+//                        mlReacord.setBeaconC0(Util.beaconsMap.get("C0:08:B4:0E:37:0E").getRssiValue());
+//                        mlReacord.setX(point.x);
+//                        mlReacord.setY(point.y);
+//                        Util.db.collection("rssi_without_smooting").add(mlReacord);
+//                    }
+//                }, 0, 300);
+
+
             }
         });
     }
@@ -101,7 +132,10 @@ public class DataCollectingActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        timier.cancel();
+       // timier2.cancel();
         dataCollectingView.pause();
+
     }
 
 }

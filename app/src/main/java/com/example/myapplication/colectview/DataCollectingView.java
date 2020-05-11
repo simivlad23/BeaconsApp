@@ -17,8 +17,8 @@ public class DataCollectingView extends SurfaceView implements Runnable {
     private Thread thread = null;
     private Context context;
 
-    public int presOnScreenX=0;
-    public int presOnScreeny=0;
+    public int presOnScreenX = 0;
+    public int presOnScreeny = 0;
 
     private volatile boolean isReading;
     public volatile boolean update = false;
@@ -42,7 +42,7 @@ public class DataCollectingView extends SurfaceView implements Runnable {
         init(context);
     }
 
-    public void init(Context context){
+    public void init(Context context) {
         this.context = context;
         surfaceHolder = getHolder();
         paint = new Paint();
@@ -77,15 +77,16 @@ public class DataCollectingView extends SurfaceView implements Runnable {
 
             //####################  DRAW TOUCH POSITION ####################
             paint.setColor(Color.argb(255, 255, 0, 0));
-            canvas.drawRect(presOnScreenX ,
-                    presOnScreeny ,
+            canvas.drawRect(presOnScreenX,
+                    presOnScreeny,
                     presOnScreenX + Util.BLOCK_SIZE,
-                    presOnScreeny  + Util.BLOCK_SIZE,
+                    presOnScreeny + Util.BLOCK_SIZE,
                     paint);
 
             paint.setColor(Color.RED);
             paint.setTextSize(40);
-            canvas.drawText("X:"+ presOnScreenX+ "  y:"+ presOnScreeny, (float) presOnScreenX, (float)presOnScreeny, paint);
+            Point nowLocation = Util.convertFromPixelToCm(presOnScreenX, presOnScreeny);
+            canvas.drawText("X:" + nowLocation.x + "  y:" + nowLocation.y, (float) presOnScreenX, (float) presOnScreeny, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
@@ -109,7 +110,7 @@ public class DataCollectingView extends SurfaceView implements Runnable {
         //######### DRAW VERTICAL WALLS  #########
         paint.setStrokeWidth(vericalWallWidth);
 
-        int offsetWall = (int) (vericalWallWidth/ 2);
+        int offsetWall = (int) (vericalWallWidth / 2);
 
         //left side
         canvas.drawLine(offsetWall, 0, offsetWall, Util.SCREEN_Y, paint);
@@ -123,10 +124,10 @@ public class DataCollectingView extends SurfaceView implements Runnable {
         canvas.drawLine(point4.x + offsetWall, point2.y, point4.x + offsetWall, point4.y, paint);
 
 
-        //######### DRAW VERTICAL WALLS  #########
+        //######### DRAW HORIZONTALS WALLS  #########
         paint.setStrokeWidth(horizontalWallWidth);
 
-        offsetWall = (int) (horizontalWallWidth/ 2);
+        offsetWall = (int) (horizontalWallWidth / 2);
 
         //buttom side
         canvas.drawLine(0, (float) (Util.SCREEN_Y - offsetWall), Util.SCREEN_X, (float) (Util.SCREEN_Y - offsetWall), paint);
@@ -146,7 +147,7 @@ public class DataCollectingView extends SurfaceView implements Runnable {
         while (isReading) {
             if (update) {
                 draw();
-                update=false;
+                update = false;
             }
 
         }
@@ -172,12 +173,12 @@ public class DataCollectingView extends SurfaceView implements Runnable {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 presOnScreenX = (int) motionEvent.getX();
-                presOnScreeny =  (int) motionEvent.getY();
+                presOnScreeny = (int) motionEvent.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
                 break;
             case MotionEvent.ACTION_UP:
-                update=true;
+                update = true;
                 break;
         }
         return true;

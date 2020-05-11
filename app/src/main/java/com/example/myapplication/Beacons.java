@@ -38,7 +38,7 @@ public class Beacons {
     private double distanceFormula2 = 1.0;
     private double distanceFormula3 = 1.0;
     private double distanceAverage = 1.0;
-    private double distance= 1.0;
+    private double distance = 1.0;
 
     private List<Double> distances = new ArrayList<>();
     public LinkedList<Double> rssiRecords = new LinkedList<>();
@@ -50,7 +50,7 @@ public class Beacons {
         this.context = cnt;
     }
 
-    public void connectToGATT(){
+    public void connectToGATT() {
         this.bluetoothGatt = bluetoothDevice.connectGatt(context, true, gattCallback);
     }
 
@@ -68,10 +68,10 @@ public class Beacons {
                 timier.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
-                         boolean rssiReadStatus  = bluetoothGatt.readRemoteRssi();
-                         Log.i("STATUS READ ", "Request rssi vale from device "+ bluetoothDevice.getAddress() + "   at time: " + Util.convertFromEpochToDate() + "and staus is "+ rssiReadStatus );
+                        boolean rssiReadStatus = bluetoothGatt.readRemoteRssi();
+                        Log.i("STATUS READ ", "Request rssi vale from device " + bluetoothDevice.getAddress() + "   at time: " + Util.convertFromEpochToDate() + "and staus is " + rssiReadStatus);
                     }
-                },0, 50);
+                }, 0, 50);
             } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
                 Log.i(TAG, "onConnectionStateChange() - STATE_DISCONNECTED  " + gatt.getDevice().getAddress());
                 timier.cancel();
@@ -81,7 +81,7 @@ public class Beacons {
 
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
-           // super.onReadRemoteRssi(gatt, rssi, status);
+            // super.onReadRemoteRssi(gatt, rssi, status);
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
 
@@ -140,11 +140,10 @@ public class Beacons {
         return average;
     }
 
-    public double setAverageBleDistance(){
+    public double setAverageBleDistance() {
 
         double sum = 0.0;
-        for(Double distance : distances)
-        {
+        for (Double distance : distances) {
             sum += distance;
         }
 
@@ -154,15 +153,11 @@ public class Beacons {
         return average;
     }
 
-    public void smootingAlgoritm(ScanResult result){
+    public void smootingAlgoritm(ScanResult result) {
 
 
-        double newRssiValue;
-        if(Math.abs(result.getRssi() - rssiValue) >10) {
-            newRssiValue = averageRssiValue;
-        }else {
-            newRssiValue = WEIGHTED_VALUE * result.getRssi() + rssiRecords.getLast() * (1 - WEIGHTED_VALUE);
-        }
+        double newRssiValue = WEIGHTED_VALUE * result.getRssi() + rssiRecords.getLast() * (1 - WEIGHTED_VALUE);
+
         distanceFormula2 = Util.getDistance2(newRssiValue, Util.TX_POWER);
         distanceFormula3 = Util.getDistance3(newRssiValue, Util.TX_POWER);
 
@@ -173,7 +168,7 @@ public class Beacons {
         }
 
 
-       // Util.recordsList.add(new RssiRecord(bluetoothDevice.getName(), bluetoothDevice.getAddress(), newRssiValue, distanceCalculated3, date));
+        // Util.recordsList.add(new RssiRecord(bluetoothDevice.getName(), bluetoothDevice.getAddress(), newRssiValue, distanceCalculated3, date));
         //distances.add(distanceCalculated);
         distances.add(distanceFormula3);
 
