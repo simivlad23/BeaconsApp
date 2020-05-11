@@ -80,10 +80,10 @@ public class DataCollectingActivity extends AppCompatActivity {
 
                 MLReacord mlReacord = new MLReacord();
                 mlReacord.setTimeReacord(Util.convertFromEpochToDate());
-                mlReacord.setBeacon1(Util.beaconsMap.get("C7:7E:A2:BD:51:4C").getAverageRssiValue());
-                mlReacord.setBeacon2(Util.beaconsMap.get("D2:83:6A:5E:AB:F8").getAverageRssiValue());
-                mlReacord.setBeacon3(Util.beaconsMap.get("D1:A4:D2:15:51:00").getAverageRssiValue());
-                mlReacord.setBeacon4(Util.beaconsMap.get("C0:08:B4:0E:37:0E").getAverageRssiValue());
+                mlReacord.setBeaconC7(Util.beaconsMap.get("C7:7E:A2:BD:51:4C").getAverageRssiValue());
+                mlReacord.setBeaconD2(Util.beaconsMap.get("D2:83:6A:5E:AB:F8").getAverageRssiValue());
+                mlReacord.setBeaconD1(Util.beaconsMap.get("D1:A4:D2:15:51:00").getAverageRssiValue());
+                mlReacord.setBeaconC0(Util.beaconsMap.get("C0:08:B4:0E:37:0E").getAverageRssiValue());
                 mlReacord.setX(point.x);
                 mlReacord.setY(point.y);
 

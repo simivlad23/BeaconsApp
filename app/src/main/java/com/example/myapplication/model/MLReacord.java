@@ -5,22 +5,22 @@ import java.util.Date;
 public class MLReacord {
 
     private Date timeReacord;
-    private double beacon1;
-    private double beacon2;
-    private double beacon3;
-    private double beacon4;
+    private double beaconC7;
+    private double beaconD2;
+    private double beaconD1;
+    private double beaconC0;
     private double x;
     private double y;
 
     public MLReacord() {
     }
 
-    public MLReacord(Date timeReacord, double beacon1, double beacon2, double beacon3, double beacon4, double x, double y) {
+    public MLReacord(Date timeReacord, double beaconC7, double beaconD2, double beaconD1, double beaconC0, double x, double y) {
         this.timeReacord = timeReacord;
-        this.beacon1 = beacon1;
-        this.beacon2 = beacon2;
-        this.beacon3 = beacon3;
-        this.beacon4 = beacon4;
+        this.beaconC7 = beaconC7;
+        this.beaconD2 = beaconD2;
+        this.beaconD1 = beaconD1;
+        this.beaconC0 = beaconC0;
         this.x = x;
         this.y = y;
     }
@@ -33,36 +33,36 @@ public class MLReacord {
         this.timeReacord = timeReacord;
     }
 
-    public double getBeacon1() {
-        return beacon1;
+    public double getBeaconC7() {
+        return beaconC7;
     }
 
-    public void setBeacon1(double beacon1) {
-        this.beacon1 = beacon1;
+    public void setBeaconC7(double beaconC7) {
+        this.beaconC7 = beaconC7;
     }
 
-    public double getBeacon2() {
-        return beacon2;
+    public double getBeaconD2() {
+        return beaconD2;
     }
 
-    public void setBeacon2(double beacon2) {
-        this.beacon2 = beacon2;
+    public void setBeaconD2(double beaconD2) {
+        this.beaconD2 = beaconD2;
     }
 
-    public double getBeacon3() {
-        return beacon3;
+    public double getBeaconD1() {
+        return beaconD1;
     }
 
-    public void setBeacon3(double beacon3) {
-        this.beacon3 = beacon3;
+    public void setBeaconD1(double beaconD1) {
+        this.beaconD1 = beaconD1;
     }
 
-    public double getBeacon4() {
-        return beacon4;
+    public double getBeaconC0() {
+        return beaconC0;
     }
 
-    public void setBeacon4(double beacon4) {
-        this.beacon4 = beacon4;
+    public void setBeaconC0(double beaconC0) {
+        this.beaconC0 = beaconC0;
     }
 
     public double getX() {
