@@ -143,14 +143,14 @@ public class DataCollectingView extends SurfaceView implements Runnable {
 
         //######### DRAW GRID MAP  #########
         paint.setStrokeWidth(1);
-        Point origin = Util.convertFromCmToPixels(0,0);
+        Point origin = Util.convertFromCmToPixels(0, 0);
         for (int i = 0; i <= Util.FOOR_WIDE_CM; i = i + 50) {
             double pixel = Util.PIXELS_PER_CM_X * i;
-            canvas.drawLine((float) (origin.x+ pixel), 0, (float) (origin.x + pixel), Util.SCREEN_Y, paint);
+            canvas.drawLine((float) (origin.x + pixel), 0, (float) (origin.x + pixel), Util.SCREEN_Y, paint);
         }
         for (int i = 0; i <= Util.FLOOR_HEIGHT_CM; i = i + 50) {
-            double pixel = Util.PIXELS_PER_CM_Y* i;
-            canvas.drawLine(0, (float) (origin.y + pixel), Util.SCREEN_X,(float) (origin.y + pixel), paint);
+            double pixel = Util.PIXELS_PER_CM_Y * i;
+            canvas.drawLine(0, (float) (origin.y + pixel), Util.SCREEN_X, (float) (origin.y + pixel), paint);
         }
 
 
@@ -186,8 +186,15 @@ public class DataCollectingView extends SurfaceView implements Runnable {
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                presOnScreenX = (int) motionEvent.getX();
-                presOnScreeny = (int) motionEvent.getY();
+                int x = (int) motionEvent.getX();
+                int y = (int) motionEvent.getY();
+                if (Math.abs(y -presOnScreeny)<500){
+                    presOnScreenX = x;
+                    presOnScreeny = y;
+                }else
+                {
+                    Util.makeTaost("Go smoother",context);
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 break;

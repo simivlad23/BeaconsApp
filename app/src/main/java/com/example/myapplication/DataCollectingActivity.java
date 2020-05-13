@@ -96,10 +96,10 @@ public class DataCollectingActivity extends AppCompatActivity {
                         mlReacord.setBeaconC0(Util.beaconsMap.get("C0:08:B4:0E:37:0E").getAverageRssiValue());
                         mlReacord.setX(point.x);
                         mlReacord.setY(point.y);
-                        Util.db.collection("rssi_beacon").add(mlReacord);
+                        Util.db.collection("rssi_beacon_2").add(mlReacord);
 
                     }
-                }, 0, 2000);
+                }, 0, 1500);
 //
 //                timier2 = new Timer();
 //                timier2.scheduleAtFixedRate(new TimerTask() {

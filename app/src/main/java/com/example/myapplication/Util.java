@@ -190,16 +190,16 @@ public class Util {
                     beacons.setLng(0);
                     break;
                 case "D2:83:6A:5E:AB:F8":
-                    beacons.setLat(410);
-                    beacons.setLng(510);
+                    beacons.setLat(300);
+                    beacons.setLng(0);
                     break;
                 case "D1:A4:D2:15:51:00":
-                    beacons.setLat(410);
-                    beacons.setLng(0);
+                    beacons.setLat(300);
+                    beacons.setLng(400);
                     break;
                 case "C0:08:B4:0E:37:0E":
                     beacons.setLat(0);
-                    beacons.setLng(510);
+                    beacons.setLng(400);
                     break;
                 case "C8:26:E3:CE:42:5C":
                     beacons.setLat(210);
