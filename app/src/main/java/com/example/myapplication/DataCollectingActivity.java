@@ -116,11 +116,13 @@ public class DataCollectingActivity extends AppCompatActivity {
                             FilterRssi filterRssi = new FilterRssi(beacons.getRssiValue(),
                                                                     beacons.getMeanRssi(),
                                                                     beacons.getKalmanRssi(),
+                                                                    beacons.getArmaRssi(),
                                                                     beacons.getRssiDist(),
                                                                     beacons.getMeanDist(),
                                                                     beacons.getKalmanDist(),
+                                                                    beacons.getArmaDist(),
                                                                     point.y);
-                                Util.db.collection("filter_comparation").add(filterRssi);
+                                Util.db.collection("filter_comparation2").add(filterRssi);
                         }
                     }
                 }, 0, 1000);

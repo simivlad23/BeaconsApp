@@ -6,6 +6,7 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.myapplication.filter.ArmaFilter;
 import com.example.myapplication.filter.KalmanFilter;
 import com.example.myapplication.filter.MeanFilter;
 import com.example.myapplication.model.Position;
@@ -64,6 +65,7 @@ public class Util {
     public static List<Point> testPosition = new ArrayList<>();
     public static KalmanFilter kalmanFilter = new KalmanFilter();
     public static MeanFilter meanFilter = new MeanFilter();
+    public static ArmaFilter armaFilter = new ArmaFilter();
 
 
     public static double getDistance(double rssi, double txPower) {

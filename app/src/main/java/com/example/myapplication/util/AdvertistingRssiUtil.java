@@ -40,5 +40,4 @@ public abstract class AdvertistingRssiUtil {
         return packetCount / (float) (timeUnit.toSeconds(duration));
     }
 
-
 }

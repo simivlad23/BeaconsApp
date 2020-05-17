@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
                                     mDeviceList.add(beacons.getBluetoothDevice().getName() + "\n" +
                                                     " rssi mean: " + beacons.getAverageRssiValue() + "\n" +
                                                     " rssi now: " + beacons.getRssiValue() + "\n" +
-                                                    " rssi kalman: " + beacons.getKalmanRssi() + "\n"
+                                                    " rssi kalman: " + beacons.getKalmanRssi() + "\n"+
+                                                    " rssi arma: " + beacons.getArmaRssi() + "\n"
 //                                            " dis2: " + beacons.getDistanceFormula2() + " --- " +
 //                                            " dis3: " + beacons.getDistanceFormula3() + "\n" +
 //                                            " dis2Mean: " + Util.getDistance2(beacons.getAverageRssiValue(), -62) +
@@ -124,18 +125,21 @@ public class MainActivity extends AppCompatActivity {
 
                             float kalmanRssi = Util.kalmanFilter.filter(beacons);
                             float meanRssi = Util.meanFilter.filter(beacons);
-                            float armaRssi = -61;
+                            float armaRssi = Util.armaFilter.filter(beacons);
+
                             float nowDistance = BeaconDistanceCalculator.calculateDistance((float) beacons.getRssiValue());
                             float kalmanRssiDist = BeaconDistanceCalculator.calculateDistance(kalmanRssi);
                             float meanRssiDist = BeaconDistanceCalculator.calculateDistance(meanRssi);
+                            float armaDistance = BeaconDistanceCalculator.calculateDistance(armaRssi);
 
+                            beacons.setArmaRssi(armaRssi);
                             beacons.setMeanRssi(meanRssi);
                             beacons.setKalmanRssi(kalmanRssi);
 
                             beacons.setRssiDist(nowDistance);
                             beacons.setKalmanDist(kalmanRssiDist);
                             beacons.setMeanDist(meanRssiDist);
-
+                            beacons.setArmaDist(armaDistance);
 
                         }
                     }

@@ -38,12 +38,14 @@ public class Beacons {
 
 
     private double rssiValue = 0.0;
-    private double kalmanRssi =0.0;
-    private double meanRssi =0.0;
+    private double kalmanRssi = 0.0;
+    private double meanRssi = 0.0;
+    private double armaRssi = 0.0;
 
     private double rssiDist = 1.0;
     private double kalmanDist = 1.0;
     private double meanDist = 1.0;
+    private double armaDist = 1.0;
 
     private double averageRssiValue = 1.0;
     private double distanceFormula1 = 1.0;
@@ -296,8 +298,7 @@ public class Beacons {
             advertisingPackets.removeAll(removableAdvertisingPackets);
         }
     }
-
-
+    
     public void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
         this.bluetoothDevice = bluetoothDevice;
     }
@@ -428,5 +429,21 @@ public class Beacons {
 
     public void setMeanDist(double meanDist) {
         this.meanDist = meanDist;
+    }
+
+    public double getArmaRssi() {
+        return armaRssi;
+    }
+
+    public void setArmaRssi(double armaRssi) {
+        this.armaRssi = armaRssi;
+    }
+
+    public double getArmaDist() {
+        return armaDist;
+    }
+
+    public void setArmaDist(double armaDist) {
+        this.armaDist = armaDist;
     }
 }
