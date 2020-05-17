@@ -6,6 +6,8 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.myapplication.filter.KalmanFilter;
+import com.example.myapplication.filter.MeanFilter;
 import com.example.myapplication.model.Position;
 import com.example.myapplication.model.RssiRecord;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -60,6 +62,8 @@ public class Util {
 
     public static List<Point> beaconsPosition = new ArrayList<>();
     public static List<Point> testPosition = new ArrayList<>();
+    public static KalmanFilter kalmanFilter = new KalmanFilter();
+    public static MeanFilter meanFilter = new MeanFilter();
 
 
     public static double getDistance(double rssi, double txPower) {

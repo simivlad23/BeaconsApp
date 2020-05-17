@@ -27,3 +27,7 @@ o
 ?app/src/main/java/com/example/myapplication/views/LiveView.java,e\7\e75c42749f164df6b7e34e8898628aec84b02369
 q
 Aapp/src/main/java/com/example/myapplication/model/RssiRecord.java,a\f\afbf741460b805553f812d8651e7cfe6fc3aa982
+p
+@app/src/main/java/com/example/myapplication/model/MLReacord.java,5\b\5b4c2beddbbe59d87d01dc97cf1949938ec0b043
+~
+Napp/src/main/java/com/example/myapplication/colectview/DataCollectingView.java,6\5\65f03ca0943331b4e574223db20c3a837b9fe670

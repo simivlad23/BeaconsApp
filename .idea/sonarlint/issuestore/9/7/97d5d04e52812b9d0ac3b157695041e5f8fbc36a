@@ -1,28 +1,28 @@
 
-T
-java:S1153â"1Directly append the argument of String.valueOf().(‘²€¯úÿÿÿÿ8´ÖÉÍ“.
-F
-java:S1172–"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
-E
-java:S1172P"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
-F
-java:S1172«"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
 I
-java:S1068&"'Remove this unused "TAG" private field.(·˜ş’ûÿÿÿÿ8´ÖÉÍ“.
-^	java:S125¸"<This block of commented-out lines of code should be removed.(ïğ®’şÿÿÿÿ8´ÖÉÍ“.
+java:S1068)"'Remove this unused "TAG" private field.(·˜ş’ûÿÿÿÿ8´ÖÉÍ“.
+S
+java:S2696;"6Make the enclosing method "static" or remove this set.(ùÃäƒ8‰¤ª .
+n	java:S117Õ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¦³«»8‰¤ª .
 F
-java:S1172Œ"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
-F
-java:S1148ö"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8´ÖÉÍ“.
-F
-java:S1172¡"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+java:S1172•"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+b
+java:S1124*"EReorder the modifiers to comply with the Java Language Specification.(ŞÁÀ8‰¤ª .
 T
-java:S1153â"1Directly append the argument of String.valueOf().(‘²€¯úÿÿÿÿ8´ÖÉÍ“.
-X
-java:S2696<"6Make the enclosing method "static" or remove this set.(ç÷¶ ùÿÿÿÿ8Ô¡º¤œ.
-X
-java:S2696^"6Make the enclosing method "static" or remove this set.(ç÷¶ ùÿÿÿÿ8Ô¡º¤œ.
-K
-java:S1172‚"(Remove this unused method parameter "v".(şäÆ¸üÿÿÿÿ8Ô¡º¤œ.
-]	java:S125;"<This block of commented-out lines of code should be removed.(®²³ùÿÿÿÿ8Ô¡º¤œ.
-]	java:S125q"<This block of commented-out lines of code should be removed.(ıêüšıÿÿÿÿ8Ô¡º¤œ.
+java:S1153‚"1Directly append the argument of String.valueOf().(‘²€¯úÿÿÿÿ8´ÖÉÍ“.
+E
+java:S1172w"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+F
+java:S1172€"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+]
+java:S3398Ê"?Move this method into the anonymous class declared at line 180.(ïäËİ8‰¤ª .
+T
+java:S1153‚"1Directly append the argument of String.valueOf().(‘²€¯úÿÿÿÿ8´ÖÉÍ“.
+d
+java:S1126Ë"AReplace this if-then-else statement by a single return statement.(£¢±Şûÿÿÿÿ8‰¤ª .
+E
+java:S1172R"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.
+F
+java:S1148–"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8´ÖÉÍ“.
+F
+java:S1172‹"(Remove this unused method parameter "v".(¡é††8´ÖÉÍ“.

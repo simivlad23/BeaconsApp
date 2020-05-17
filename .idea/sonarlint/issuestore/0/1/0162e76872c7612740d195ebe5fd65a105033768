@@ -1,5 +1,13 @@
 
-]	java:S125b"<This block of commented-out lines of code should be removed.(äøÈúşÿÿÿÿ8³ÖÉÍ“.
-X
-java:S1117v"<Rename "distance" which hides the field declared at line 28.(ßÎå8³ÖÉÍ“.
-]	java:S125S"<This block of commented-out lines of code should be removed.(å€»ûÿÿÿÿ8³ÖÉÍ“.
+]	java:S125T"<This block of commented-out lines of code should be removed.(å€»ûÿÿÿÿ8³ÖÉÍ“.
+Y	java:S125«"<This block of commented-out lines of code should be removed.(…·èì8õˆ¤ª .
+™
+java:S1319,"wThe type of the "rssiRecords" object should be an interface such as "List" rather than the implementation "LinkedList".(à¤üÿÿÿÿÿ8õˆ¤ª .
+^	java:S125º"<This block of commented-out lines of code should be removed.(ë·äêùÿÿÿÿ8õˆ¤ª .
+y
+java:S1104,"WMake rssiRecords a static final constant or non-public and provide accessors if needed.(à¤üÿÿÿÿÿ8õˆ¤ª .
+]	java:S125l"<This block of commented-out lines of code should be removed.(äøÈúşÿÿÿÿ8³ÖÉÍ“.
+Q
+java:S1068""/Remove this unused "nowRssiRead" private field.(ß³úßıÿÿÿÿ8õˆ¤ª .
+_
+java:S1117’"<Rename "distance" which hides the field declared at line 41.(ûÔ²©ûÿÿÿÿ8õˆ¤ª .

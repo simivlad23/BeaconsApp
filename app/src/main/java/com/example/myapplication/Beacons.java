@@ -7,6 +7,7 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.myapplication.model.AdvertisingPacket;
 import com.example.myapplication.model.BeaconRecord;
 import com.example.myapplication.model.RssiRecord;
 
@@ -14,13 +15,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class Beacons {
 
     private static final String TAG = "BLE-BEACON";
     public static final double WEIGHTED_VALUE = 0.8;
+    public static final long MAXIMUM_PACKET_AGE = TimeUnit.SECONDS.toMillis(30);
+
 
     private BluetoothGatt bluetoothGatt;
     private BluetoothDevice bluetoothDevice;
@@ -31,8 +36,15 @@ public class Beacons {
     private double lat = 0.0;
     private double lng = 0.0;
 
-    private double nowRssiRead = 0.0;
+
     private double rssiValue = 0.0;
+    private double kalmanRssi =0.0;
+    private double meanRssi =0.0;
+
+    private double rssiDist = 1.0;
+    private double kalmanDist = 1.0;
+    private double meanDist = 1.0;
+
     private double averageRssiValue = 1.0;
     private double distanceFormula1 = 1.0;
     private double distanceFormula2 = 1.0;
@@ -42,6 +54,7 @@ public class Beacons {
 
     private List<Double> distances = new ArrayList<>();
     public LinkedList<Double> rssiRecords = new LinkedList<>();
+    public List<AdvertisingPacket> advertisingPackets = new ArrayList<>();
 
     public Beacons(BluetoothDevice bt, Context cnt) {
         rssiRecords.addLast(-50.0);
@@ -55,7 +68,6 @@ public class Beacons {
     }
 
     protected BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
-
 
         @Override
         public void onConnectionStateChange(final BluetoothGatt gatt, int status, int newState) {
@@ -140,21 +152,7 @@ public class Beacons {
         return average;
     }
 
-    public double setAverageBleDistance() {
-
-        double sum = 0.0;
-        for (Double distance : distances) {
-            sum += distance;
-        }
-
-        double average = sum / distances.size();
-        distances.clear();
-        this.distance = average;
-        return average;
-    }
-
     public void smootingAlgoritm(ScanResult result) {
-
 
         double newRssiValue = WEIGHTED_VALUE * result.getRssi() + rssiRecords.getLast() * (1 - WEIGHTED_VALUE);
 
@@ -198,6 +196,107 @@ public class Beacons {
     public BluetoothDevice getBluetoothDevice() {
         return bluetoothDevice;
     }
+
+    public ArrayList<AdvertisingPacket> getAdvertisingPacketsBetween(long startTimestamp, long endTimestamp) {
+        // check if advertising packets are available
+        if (advertisingPackets.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        AdvertisingPacket oldestAdvertisingPacket = advertisingPackets.get(0);
+        AdvertisingPacket latestAdvertisingPacket = advertisingPackets.get(advertisingPackets.size() - 1);
+
+        // check if the timestamps are out of range
+        if (endTimestamp <= oldestAdvertisingPacket.getTimestamp() || startTimestamp > latestAdvertisingPacket.getTimestamp()) {
+            return new ArrayList<>();
+        }
+
+        AdvertisingPacket midstAdvertisingPacket = advertisingPackets.get(advertisingPackets.size() / 2);
+
+        // find the index of the first advertising packet with a timestamp
+        // larger than or equal to the specified startTimestamp
+        int startIndex = 0;
+        if (startTimestamp > oldestAdvertisingPacket.getTimestamp()) {
+            // figure out if the start timestamp is before or after the midst advertising packet
+            ListIterator<AdvertisingPacket> listIterator;
+            if (startTimestamp < midstAdvertisingPacket.getTimestamp()) {
+                // start timestamp is in the first half of advertising packets
+                // start iterating from the beginning
+                listIterator = advertisingPackets.listIterator();
+                while (listIterator.hasNext()) {
+                    if (listIterator.next().getTimestamp() >= startTimestamp) {
+                        startIndex = listIterator.previousIndex();
+                        break;
+                    }
+                }
+            } else {
+                // start timestamp is in the second half of advertising packets
+                // start iterating from the end
+                listIterator = advertisingPackets.listIterator(advertisingPackets.size());
+                while (listIterator.hasPrevious()) {
+                    if (listIterator.previous().getTimestamp() < startTimestamp) {
+                        startIndex = listIterator.nextIndex() + 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // find the index of the last advertising packet with a timestamp
+        // smaller than the specified endTimestamp
+        int endIndex = advertisingPackets.size();
+        if (endTimestamp < latestAdvertisingPacket.getTimestamp()) {
+            // figure out if the end timestamp is before or after the midst advertising packet
+            ListIterator<AdvertisingPacket> listIterator;
+            if (endTimestamp < midstAdvertisingPacket.getTimestamp()) {
+                // end timestamp is in the first half of advertising packets
+                // start iterating from the beginning
+                listIterator = advertisingPackets.listIterator(startIndex);
+                while (listIterator.hasNext()) {
+                    if (listIterator.next().getTimestamp() >= endTimestamp) {
+                        endIndex = listIterator.previousIndex();
+                        break;
+                    }
+                }
+            } else {
+                // end timestamp is in the second half of advertising packets
+                // start iterating from the end
+                listIterator = advertisingPackets.listIterator(advertisingPackets.size());
+                while (listIterator.hasPrevious()) {
+                    if (listIterator.previous().getTimestamp() < endTimestamp) {
+                        endIndex = listIterator.nextIndex() + 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>(advertisingPackets.subList(startIndex, endIndex));
+    }
+
+    public void trimAdvertisingPackets() {
+        synchronized (advertisingPackets) {
+            if (advertisingPackets.isEmpty()) {
+                return;
+            }
+            List<AdvertisingPacket> removableAdvertisingPackets = new ArrayList<>();
+            AdvertisingPacket latestAdvertisingPacket = advertisingPackets.get(advertisingPackets.size() - 1);
+            long minimumPacketTimestamp = System.currentTimeMillis() - MAXIMUM_PACKET_AGE;
+            for (AdvertisingPacket advertisingPacket : advertisingPackets) {
+                if (advertisingPacket == latestAdvertisingPacket) {
+                    // don't remove the latest packet
+                    continue;
+                }
+                if (advertisingPacket.getTimestamp() < minimumPacketTimestamp) {
+                    // mark old packets as removable
+                    removableAdvertisingPackets.add(advertisingPacket);
+                }
+            }
+
+            advertisingPackets.removeAll(removableAdvertisingPackets);
+        }
+    }
+
 
     public void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
         this.bluetoothDevice = bluetoothDevice;
@@ -285,5 +384,49 @@ public class Beacons {
 
     public void setDistances(List<Double> distances) {
         this.distances = distances;
+    }
+
+    public double getKalmanRssi() {
+        return kalmanRssi;
+    }
+
+    public void setKalmanRssi(double kalmanRssi) {
+        this.kalmanRssi = kalmanRssi;
+    }
+
+    public static String getTAG() {
+        return TAG;
+    }
+
+    public double getMeanRssi() {
+        return meanRssi;
+    }
+
+    public void setMeanRssi(double meanRssi) {
+        this.meanRssi = meanRssi;
+    }
+
+    public double getRssiDist() {
+        return rssiDist;
+    }
+
+    public void setRssiDist(double rssiDist) {
+        this.rssiDist = rssiDist;
+    }
+
+    public double getKalmanDist() {
+        return kalmanDist;
+    }
+
+    public void setKalmanDist(double kalmanDist) {
+        this.kalmanDist = kalmanDist;
+    }
+
+    public double getMeanDist() {
+        return meanDist;
+    }
+
+    public void setMeanDist(double meanDist) {
+        this.meanDist = meanDist;
     }
 }

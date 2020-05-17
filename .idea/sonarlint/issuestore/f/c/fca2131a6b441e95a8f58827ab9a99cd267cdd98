@@ -1,47 +1,144 @@
 
-L
-java:S1128"/Remove this unused import 'java.util.Iterator'.(¥ÍòÕ8¶ÖÉÍ“.
-
-java:S1488S"_Immediately return this expression instead of assigning it to the temporary variable "dateNow".(Ï³Ìøÿÿÿÿ8¶ÖÉÍ“.
-:
-java:S2386!"Make this member "protected".(èÌ¨8¶ÖÉÍ“.
-W
-java:S1118":Add a private constructor to hide the implicit public one.(×¼­Æ8¶ÖÉÍ“.
-t
-java:S1104!"WMake beaconsList a static final constant or non-public and provide accessors if needed.(èÌ¨8¶ÖÉÍ“.
-T
-java:S1135X"2Complete the task associated to this TODO comment.( ÌÈ¬úÿÿÿÿ8¶ÖÉÍ“.
-:
-java:S2386$"Make this member "protected".(²è¬ˆ8¶ÖÉÍ“.
-C	java:S131y""Add a default case to this switch.(›ú‡‘şÿÿÿÿ8¶ÖÉÍ“.
-:
-java:S2386%"Make this member "protected".(µæØÿ8¶ÖÉÍ“.
-y
-java:S1104'"\Make startDateReading a static final constant or non-public and provide accessors if needed.(ïèõ”8¶ÖÉÍ“.
-P
-java:S1444%"3Make this "public static positionsList" field final(µæØÿ8¶ÖÉÍ“.
-H
-java:S1172P"+Remove this unused method parameter "time".(¨ä²ó8¶ÖÉÍ“.
-]	java:S125l"<This block of commented-out lines of code should be removed.(Œ¶¸ˆÿÿÿÿÿ8¶ÖÉÍ“.
-v
-java:S1104%"YMake positionsList a static final constant or non-public and provide accessors if needed.(µæØÿ8¶ÖÉÍ“.
-P
-java:S1172)".Remove this unused method parameter "txPower".(ÿ›Å ÿÿÿÿÿ8¶ÖÉÍ“.
-N
-java:S1444$"1Make this "public static recordsList" field final(²è¬ˆ8¶ÖÉÍ“.
-S
-java:S1444'"6Make this "public static startDateReading" field final(ïèõ”8¶ÖÉÍ“.
-N
-java:S1444!"1Make this "public static beaconsList" field final(èÌ¨8¶ÖÉÍ“.
-t
-java:S1104$"WMake recordsList a static final constant or non-public and provide accessors if needed.(²è¬ˆ8¶ÖÉÍ“.
-U
-java:S1128"3Remove this unused import 'android.icu.text.Edits'.(€Î©ãúÿÿÿÿ8¶ÖÉÍ“.
-J
-java:S1444"".Make this "public static wifiList" field final(Äœ™8Ô¡º¤œ.
+b
+java:S1854“"DRemove this useless assignment to local variable "covarianceMatrix".(š‹„8Ù‹¤ª .
+x
+java:S1104,"VMake WALL_WIDTH a static final constant or non-public and provide accessors if needed.(‹Û°Ñùÿÿÿÿ8Ö‹¤ª .
+u
+java:S1104>"XMake testPosition a static final constant or non-public and provide accessors if needed.(¡ÍÈŒ8Ö‹¤ª .
 p
-java:S1104""TMake wifiList a static final constant or non-public and provide accessors if needed.(Äœ™8Ô¡º¤œ.
-P
-java:S1128"3Remove this unused import 'android.graphics.Point'.(Õ ô²8Ô¡º¤œ.
+java:S3008%"SRename this field "SCREEN_X" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Œïíá8Ö‹¤ª .
+y
+java:S3008*"WRename this field "FOOR_WIDE_CM" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¢Ê¯²øÿÿÿÿ8Ö‹¤ª .
+M
+java:S14440"0Make this "public static BLOCK_SIZE" field final(Õ¯ï•8Ö‹¤ª .
+R
+java:S14447"0Make this "public static beaconsMap" field final(’Æ‚òıÿÿÿÿ8Ö‹¤ª .
+s
+java:S11040"VMake BLOCK_SIZE a static final constant or non-public and provide accessors if needed.(Õ¯ï•8Ö‹¤ª .
+R
+java:S1444="5Make this "public static beaconsPosition" field final(ÜŒˆ‹8Ö‹¤ª .
+O
+java:S1444>"2Make this "public static testPosition" field final(¡ÍÈŒ8Ö‹¤ª .
+y
+java:S3008)"WRename this field "FLOOR_HEIGHT" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÌàÒÇüÿÿÿÿ8Ö‹¤ª .
+w
+java:S30082"ZRename this field "PIXELS_PER_CM_X" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‡ÿ§–8Ù‹¤ª .
 :
-java:S2386'"Make this member "protected".(ïèõ”8Ô¡º¤œ.
+java:S2386:"Make this member "protected".(²è¬ˆ8¶ÖÉÍ“.
+T
+java:S1481’"6Remove this unused "standardDeviation" local variable.(¦°÷8Ù‹¤ª .
+}
+java:S1104+"[Make FLOOR_HEIGHT_CM a static final constant or non-public and provide accessors if needed.(ïÑŞéüÿÿÿÿ8Ö‹¤ª .
+R
+java:S1444."5Make this "public static NUM_BLOCKS_WIDE" field final(¦º‘8Ö‹¤ª .
+T
+java:S1481±"6Remove this unused "standardDeviation" local variable.(¦°÷8Ù‹¤ª .
+?
+java:S23867"Make this member "protected".(’Æ‚òıÿÿÿÿ8Ù‹¤ª .
+|
+java:S3008+"ZRename this field "FLOOR_HEIGHT_CM" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ïÑŞéüÿÿÿÿ8Ö‹¤ª .
+k
+java:S11049"NMake df a static final constant or non-public and provide accessors if needed.(°”òÅ8Ö‹¤ª .
+K
+java:S1172[".Remove this unused method parameter "message".(‚ı‡€8Ù‹¤ª .
+E
+java:S14445"(Make this "public static db" field final(ğ†åó8Ö‹¤ª .
+w
+java:S3008,"URename this field "WALL_WIDTH" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‹Û°Ñùÿÿÿÿ8Ù‹¤ª .
+x
+java:S1104."[Make NUM_BLOCKS_WIDE a static final constant or non-public and provide accessors if needed.(¦º‘8Ö‹¤ª .
+S
+java:S1481²"5Remove this unused "covarianceMatrix" local variable.(š‹„8Ù‹¤ª .
+t
+java:S11048"WMake beaconsList a static final constant or non-public and provide accessors if needed.(èÌ¨8¶ÖÉÍ“.
+R
+java:S14443"5Make this "public static PIXELS_PER_CM_Y" field final(Âğ€8Ö‹¤ª .
+t
+java:S1104:"WMake recordsList a static final constant or non-public and provide accessors if needed.(²è¬ˆ8¶ÖÉÍ“.
+q
+java:S1104&"TMake SCREEN_Y a static final constant or non-public and provide accessors if needed.(Ë‘Äø8Ö‹¤ª .
+‚
+java:S1488F"`Immediately return this expression instead of assigning it to the temporary variable "distance".(ŠâÉ˜ùÿÿÿÿ8Ö‹¤ª .
+T
+java:S1444*"2Make this "public static FOOR_WIDE_CM" field final(¢Ê¯²øÿÿÿÿ8Ö‹¤ª .
+P
+java:S1172A".Remove this unused method parameter "txPower".(ÿ›Å ÿÿÿÿÿ8¶ÖÉÍ“.
+Q
+java:S1444/"4Make this "public static NUM_BLOCK_HIGH" field final(øİûú8Ö‹¤ª .
+q
+java:S1104%"TMake SCREEN_X a static final constant or non-public and provide accessors if needed.(Œïíá8Ö‹¤ª .
+z
+java:S1104)"XMake FLOOR_HEIGHT a static final constant or non-public and provide accessors if needed.(ÌàÒÇüÿÿÿÿ8Ö‹¤ª .
+c
+java:S1854’"ERemove this useless assignment to local variable "standardDeviation".(¦°÷8Ù‹¤ª .
+K
+java:S1444%".Make this "public static SCREEN_X" field final(Œïíá8Ö‹¤ª .
+:
+java:S23868"Make this member "protected".(èÌ¨8¶ÖÉÍ“.
+
+java:S1488w"_Immediately return this expression instead of assigning it to the temporary variable "dateNow".(Ï³Ìøÿÿÿÿ8¶ÖÉÍ“.
+W
+java:S1118":Add a private constructor to hide the implicit public one.(×¼­Æ8¶ÖÉÍ“.
+:
+java:S2386;"Make this member "protected".(µæØÿ8¶ÖÉÍ“.
+S
+java:S1481“"5Remove this unused "covarianceMatrix" local variable.(š‹„8Ù‹¤ª .
+w
+java:S30083"ZRename this field "PIXELS_PER_CM_Y" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Âğ€8Ù‹¤ª .
+K
+java:S1444&".Make this "public static SCREEN_Y" field final(Ë‘Äø8Ö‹¤ª .
+Q
+java:S1444("/Make this "public static FOOR_WIDE" field final(¡­óªøÿÿÿÿ8Ö‹¤ª .
+R
+java:S1444,"0Make this "public static WALL_WIDTH" field final(‹Û°Ñùÿÿÿÿ8Ö‹¤ª .
+w
+java:S1104("UMake FOOR_WIDE a static final constant or non-public and provide accessors if needed.(¡­óªøÿÿÿÿ8Ö‹¤ª .
+N
+java:S14448"1Make this "public static beaconsList" field final(èÌ¨8¶ÖÉÍ“.
+v
+java:S1104;"YMake positionsList a static final constant or non-public and provide accessors if needed.(µæØÿ8¶ÖÉÍ“.
+x
+java:S1104="[Make beaconsPosition a static final constant or non-public and provide accessors if needed.(ÜŒˆ‹8Ö‹¤ª .
+D
+java:S1068"'Remove this unused "TAG" private field.(ğ£ñ‘8Ù‹¤ª .
+W
+java:S1172b":Remove this unused method parameter "millisUntilFinished".(îñë‡8Ù‹¤ª .
+r
+java:S30080"URename this field "BLOCK_SIZE" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Õ¯ï•8Ù‹¤ª .
+p
+java:S3008&"SRename this field "SCREEN_Y" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ë‘Äø8Ö‹¤ª .
+k
+java:S11045"NMake db a static final constant or non-public and provide accessors if needed.(ğ†åó8Ö‹¤ª .
+R
+java:S14442"5Make this "public static PIXELS_PER_CM_X" field final(‡ÿ§–8Ö‹¤ª .
+c
+java:S1854±"ERemove this useless assignment to local variable "standardDeviation".(¦°÷8Ù‹¤ª .
+W
+java:S1444+"5Make this "public static FLOOR_HEIGHT_CM" field final(ïÑŞéüÿÿÿÿ8Ö‹¤ª .
+w
+java:S3008."ZRename this field "NUM_BLOCKS_WIDE" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¦º‘8Ù‹¤ª .
+D	java:S131»""Add a default case to this switch.(›ú‡‘şÿÿÿÿ8¶ÖÉÍ“.
+b
+java:S1854²"DRemove this useless assignment to local variable "covarianceMatrix".(š‹„8Ù‹¤ª .
+w
+java:S1104/"ZMake NUM_BLOCK_HIGH a static final constant or non-public and provide accessors if needed.(øİûú8Ö‹¤ª .
+z
+java:S1104*"XMake FOOR_WIDE_CM a static final constant or non-public and provide accessors if needed.(¢Ê¯²øÿÿÿÿ8Ö‹¤ª .
+x
+java:S11042"[Make PIXELS_PER_CM_X a static final constant or non-public and provide accessors if needed.(‡ÿ§–8Ö‹¤ª .
+v
+java:S3008("TRename this field "FOOR_WIDE" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¡­óªøÿÿÿÿ8Ö‹¤ª .
+x
+java:S11047"VMake beaconsMap a static final constant or non-public and provide accessors if needed.(’Æ‚òıÿÿÿÿ8Ö‹¤ª .
+N
+java:S1444:"1Make this "public static recordsList" field final(²è¬ˆ8¶ÖÉÍ“.
+T
+java:S1444)"2Make this "public static FLOOR_HEIGHT" field final(ÌàÒÇüÿÿÿÿ8Ö‹¤ª .
+x
+java:S11043"[Make PIXELS_PER_CM_Y a static final constant or non-public and provide accessors if needed.(Âğ€8Ö‹¤ª .
+E
+java:S14449"(Make this "public static df" field final(°”òÅ8Ö‹¤ª .
+P
+java:S1444;"3Make this "public static positionsList" field final(µæØÿ8¶ÖÉÍ“.
+v
+java:S3008/"YRename this field "NUM_BLOCK_HIGH" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(øİûú8Ù‹¤ª .

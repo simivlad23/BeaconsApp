@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,14 +24,18 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.example.myapplication.model.AdvertisingPacket;
 import com.example.myapplication.model.Position;
 import com.example.myapplication.model.RssiRecord;
+import com.example.myapplication.util.BeaconDistanceCalculator;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -92,13 +97,14 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 mDeviceList.clear();
                                 for (Beacons beacons : Util.beaconsMap.values()) {
-                                    mDeviceList.add(beacons.getBluetoothDevice().getName() +
-                                            " rssi mean: " + beacons.getAverageRssiValue() +
-                                            " rssi now: " + beacons.getRssiValue() + "\n" +
-                                            " dis2: " + beacons.getDistanceFormula2() + " --- " +
-                                            " dis3: " + beacons.getDistanceFormula3() + "\n" +
-                                            " dis2Mean: " + Util.getDistance2(beacons.getAverageRssiValue(), -62) +
-                                            " dis3Mean: " + Util.getDistance3(beacons.getAverageRssiValue(), -62)
+                                    mDeviceList.add(beacons.getBluetoothDevice().getName() + "\n" +
+                                                    " rssi mean: " + beacons.getAverageRssiValue() + "\n" +
+                                                    " rssi now: " + beacons.getRssiValue() + "\n" +
+                                                    " rssi kalman: " + beacons.getKalmanRssi() + "\n"
+//                                            " dis2: " + beacons.getDistanceFormula2() + " --- " +
+//                                            " dis3: " + beacons.getDistanceFormula3() + "\n" +
+//                                            " dis2Mean: " + Util.getDistance2(beacons.getAverageRssiValue(), -62) +
+//                                            " dis3Mean: " + Util.getDistance3(beacons.getAverageRssiValue(), -62)
                                     );
                                     listAdapter.notifyDataSetChanged();
                                 }
@@ -108,6 +114,32 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }, 10, 100);
+
+                final Timer timier22 = new Timer();
+                timier22.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+
+                        for (Beacons beacons : Util.beaconsMap.values()) {
+
+                            float kalmanRssi = Util.kalmanFilter.filter(beacons);
+                            float meanRssi = Util.meanFilter.filter(beacons);
+                            float armaRssi = -61;
+                            float nowDistance = BeaconDistanceCalculator.calculateDistance((float) beacons.getRssiValue());
+                            float kalmanRssiDist = BeaconDistanceCalculator.calculateDistance(kalmanRssi);
+                            float meanRssiDist = BeaconDistanceCalculator.calculateDistance(meanRssi);
+
+                            beacons.setMeanRssi(meanRssi);
+                            beacons.setKalmanRssi(kalmanRssi);
+
+                            beacons.setRssiDist(nowDistance);
+                            beacons.setKalmanDist(kalmanRssiDist);
+                            beacons.setMeanDist(meanRssiDist);
+
+
+                        }
+                    }
+                }, 10000, 500);
 
 
                 Util.makeTaost("Starting reading", getApplicationContext());
@@ -184,11 +216,17 @@ public class MainActivity extends AppCompatActivity {
 
             if (isDuplicate(result.getDevice().getAddress())) {
                 synchronized (result.getDevice()) {
-                    Util.beaconsMap.get(result.getDevice().getAddress()).smootingAlgoritm(result);
+                    Beacons beacons = Util.beaconsMap.get(result.getDevice().getAddress());
+                    AdvertisingPacket advertisingPacket = new AdvertisingPacket(result.getRssi());
+                    beacons.advertisingPackets.add(advertisingPacket);
+                    Log.i("ADVRERT", "rssi= " + advertisingPacket.getRssi() + "  time " + advertisingPacket.getTimestamp());
+                    beacons.smootingAlgoritm(result);
+
                 }
             } else {
                 synchronized (result.getDevice()) {
                     Beacons beacons = new Beacons(result.getDevice(), getApplicationContext());
+                    beacons.advertisingPackets.add(new AdvertisingPacket(result.getRssi()));
                     beacons.setRssiValue(result.getRssi());
                     Util.beaconsMap.put(result.getDevice().getAddress(), beacons);
                     Util.setBeaconsPosition();
@@ -221,9 +259,9 @@ public class MainActivity extends AppCompatActivity {
                         .setDeviceAddress("C0:08:B4:0E:37:0E").build();
 
                 filters_v2.add(scanFilter1);
-                filters_v2.add(scanFilter2);
-                filters_v2.add(scanFilter3);
-                filters_v2.add(scanFilter4);
+                //filters_v2.add(scanFilter2);
+                //filters_v2.add(scanFilter3);
+                //filters_v2.add(scanFilter4);
 
                 ScanSettings setings = new ScanSettings.Builder()
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
