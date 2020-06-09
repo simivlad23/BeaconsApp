@@ -19,8 +19,6 @@
             android:orientation="vertical"
             tools:ignore="MissingConstraints">
 
-
-
             <Button
                 android:id="@+id/button1"
                 android:layout_width="wrap_content"
@@ -35,15 +33,12 @@
                 android:layout_gravity="center_horizontal"
                 android:text="Stop" />
 
-
-
             <Button
                 android:id="@+id/button4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="Collect Data" />
-
 
             <Button
                 android:id="@+id/getLivePositionButton"
@@ -52,13 +47,6 @@
                 android:layout_gravity="center_horizontal"
                 android:text="Get Live Position" />
 
-            <Button
-                android:id="@+id/button6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Get position" />
-
 
             <ListView
                 android:id="@+id/listView"
@@ -66,63 +54,6 @@
                 android:layout_height="wrap_content" />
 
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:orientation="vertical"
-            />
-
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
-            android:text="Current Position" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="35dp"
-                android:text="Lat:  " />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:text="TextView" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="35dp"
-                android:text="Lng:  " />
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
         </LinearLayout>
 
     </LinearLayout>

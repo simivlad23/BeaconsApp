@@ -50,12 +50,7 @@ public class ArmaFilter extends WindowFilter {
         armaRssi = armaRssi - (armaFactor * (armaRssi - rssi));
     }
 
-    public float getFilteredRssi() {
-        return armaRssi;
-    }
-
     public static float getArmaFactor(float packetFrequency) {
-        //TODO make more robust to different packet frequencies
         float armaFactor = DEFAULT_ARMA_FACTOR;
         if (packetFrequency > 6) {
             armaFactor = 0.1f;
@@ -65,6 +60,10 @@ public class ArmaFilter extends WindowFilter {
             armaFactor = 0.5f;
         }
         return armaFactor;
+    }
+
+    public float getFilteredRssi() {
+        return armaRssi;
     }
 
 }

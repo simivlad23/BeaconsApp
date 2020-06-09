@@ -25,17 +25,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.example.myapplication.model.AdvertisingPacket;
-import com.example.myapplication.model.Position;
-import com.example.myapplication.model.RssiRecord;
+import com.example.myapplication.model.FilterRecoard;
 import com.example.myapplication.util.BeaconDistanceCalculator;
+import com.example.myapplication.util.Util;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> listAdapter;
     private TextView textViewLat;
     private TextView textViewLng;
+
+    private Timer timerView;
+    private Timer timerFilter;
+    private Timer timerTrim;
+    private Timer timerGetLocation;
 
 
     @Override
@@ -77,10 +80,6 @@ public class MainActivity extends AppCompatActivity {
         Button buttonStopRead = findViewById(R.id.button2);
         Button buttonStartCollecting = findViewById(R.id.button4);
         Button buttonGetLivePosition = findViewById(R.id.getLivePositionButton);
-        Button buttongetPosition = findViewById(R.id.button6);
-
-        textViewLat = findViewById(R.id.textView3);
-        textViewLng = findViewById(R.id.textView5);
 
 
         buttonStartDetect.setOnClickListener(new View.OnClickListener() {
@@ -88,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
 
                 startScanning();
 
-                final Timer timier = new Timer();
-                timier.scheduleAtFixedRate(new TimerTask() {
+                timerView = new Timer();
+                timerView.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
                         runOnUiThread(new Runnable() {
@@ -100,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                                     mDeviceList.add(beacons.getBluetoothDevice().getName() + "\n" +
                                                     " rssi mean: " + beacons.getAverageRssiValue() + "\n" +
                                                     " rssi now: " + beacons.getRssiValue() + "\n" +
-                                                    " rssi kalman: " + beacons.getKalmanRssi() + "\n"+
+                                                    " rssi kalman: " + beacons.getKalmanRssi() + "\n" +
                                                     " rssi arma: " + beacons.getArmaRssi() + "\n"
 //                                            " dis2: " + beacons.getDistanceFormula2() + " --- " +
 //                                            " dis3: " + beacons.getDistanceFormula3() + "\n" +
@@ -109,41 +108,70 @@ public class MainActivity extends AppCompatActivity {
                                     );
                                     listAdapter.notifyDataSetChanged();
                                 }
-
                             }
                         });
 
                     }
                 }, 10, 100);
 
-                final Timer timier22 = new Timer();
-                timier22.scheduleAtFixedRate(new TimerTask() {
+                timerFilter = new Timer();
+                timerFilter.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
 
-                        for (Beacons beacons : Util.beaconsMap.values()) {
+                        synchronized (Util.beaconsMap) {
+                            for (Beacons beacons : Util.beaconsMap.values()) {
 
-                            float kalmanRssi = Util.kalmanFilter.filter(beacons);
-                            float meanRssi = Util.meanFilter.filter(beacons);
-                            float armaRssi = Util.armaFilter.filter(beacons);
+                                float kalmanRssi = Util.kalmanFilter.filter(beacons);
+                                float meanRssi = Util.meanFilter.filter(beacons);
+                                float armaRssi = Util.armaFilter.filter(beacons);
 
-                            float nowDistance = BeaconDistanceCalculator.calculateDistance((float) beacons.getRssiValue());
-                            float kalmanRssiDist = BeaconDistanceCalculator.calculateDistance(kalmanRssi);
-                            float meanRssiDist = BeaconDistanceCalculator.calculateDistance(meanRssi);
-                            float armaDistance = BeaconDistanceCalculator.calculateDistance(armaRssi);
 
-                            beacons.setArmaRssi(armaRssi);
-                            beacons.setMeanRssi(meanRssi);
-                            beacons.setKalmanRssi(kalmanRssi);
+                                if (!Float.isNaN(kalmanRssi)) {
+                                    beacons.setArmaRssi(armaRssi);
+                                    beacons.setMeanRssi(meanRssi);
+                                    beacons.setKalmanRssi(kalmanRssi);
+                                }
 
-                            beacons.setRssiDist(nowDistance);
-                            beacons.setKalmanDist(kalmanRssiDist);
-                            beacons.setMeanDist(meanRssiDist);
-                            beacons.setArmaDist(armaDistance);
+                                float nowDistance = BeaconDistanceCalculator.calculateDistance((float) beacons.getRssiValue());
+                                float kalmanRssiDist = BeaconDistanceCalculator.calculateDistance(kalmanRssi);
+                                float meanRssiDist = BeaconDistanceCalculator.calculateDistance(meanRssi);
+                                float armaDistance = BeaconDistanceCalculator.calculateDistance(armaRssi);
 
+                                float nowDistance2 = BeaconDistanceCalculator.calculateDistanceFormula2((float) beacons.getRssiValue());
+                                float kalmanRssiDist2 = BeaconDistanceCalculator.calculateDistanceFormula2(kalmanRssi);
+                                float meanRssiDist2 = BeaconDistanceCalculator.calculateDistanceFormula2(meanRssi);
+                                float armaDistance2 = BeaconDistanceCalculator.calculateDistanceFormula2(armaRssi);
+
+                                beacons.setRssiDist(nowDistance);
+                                beacons.setKalmanDist(kalmanRssiDist);
+                                beacons.setMeanDist(meanRssiDist);
+                                beacons.setArmaDist(armaDistance);
+
+                                beacons.setRssiDist2(nowDistance2);
+                                beacons.setKalmanDist2(kalmanRssiDist2);
+                                beacons.setMeanDist2(meanRssiDist2);
+                                beacons.setArmaDist2(armaDistance2);
+
+                            }
                         }
                     }
-                }, 10000, 500);
+                }, 10000, 1000);
+
+
+                timerTrim = new Timer();
+                timerTrim.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        synchronized (Util.beaconsMap){
+                            for (Beacons beacons : Util.beaconsMap.values()) {
+                                beacons.trimAdvertisingPackets();
+                                Log.i("TRIM", beacons.getBluetoothDevice().getAddress() + " size=" + beacons.getAdvertisingPackets().size());
+                            }
+                        }
+
+                    }
+                }, 60 * 1000, 20 * 1000);
 
 
                 Util.makeTaost("Starting reading", getApplicationContext());
@@ -181,34 +209,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttongetPosition.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                Util.setBeaconsPosition();
-
-                final Timer timier2 = new Timer();
-                timier2.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                Position position = Util.calcutateBasedMeanRssi();
-                                Util.positionsList.add(position);
-                                position = Util.getMedianPosition();
-                                textViewLat.setText(String.valueOf(position.getLat()));
-                                textViewLng.setText(String.valueOf(position.getLng()));
-
-                            }
-                        });
-
-                    }
-                }, 1500, 1500);
-
-            }
-        });
-
         enableBluetoothAndLocation();
 
     }
@@ -223,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
                     Beacons beacons = Util.beaconsMap.get(result.getDevice().getAddress());
                     AdvertisingPacket advertisingPacket = new AdvertisingPacket(result.getRssi());
                     beacons.advertisingPackets.add(advertisingPacket);
-                    Log.i("ADVRERT", "rssi= " + advertisingPacket.getRssi() + "  time " + advertisingPacket.getTimestamp());
                     beacons.smootingAlgoritm(result);
 
                 }
@@ -234,7 +233,6 @@ public class MainActivity extends AppCompatActivity {
                     beacons.setRssiValue(result.getRssi());
                     Util.beaconsMap.put(result.getDevice().getAddress(), beacons);
                     Util.setBeaconsPosition();
-
                 }
             }
         }
@@ -261,11 +259,14 @@ public class MainActivity extends AppCompatActivity {
                         .setDeviceAddress("D2:83:6A:5E:AB:F8").build();
                 ScanFilter scanFilter4 = new ScanFilter.Builder()
                         .setDeviceAddress("C0:08:B4:0E:37:0E").build();
+                ScanFilter scanFilter5 = new ScanFilter.Builder()
+                        .setDeviceAddress("DF:08:5C:3A:4B:81").build();
 
                 filters_v2.add(scanFilter1);
-                //filters_v2.add(scanFilter2);
-                //filters_v2.add(scanFilter3);
-                //filters_v2.add(scanFilter4);
+                filters_v2.add(scanFilter2);
+                filters_v2.add(scanFilter3);
+                filters_v2.add(scanFilter4);
+                filters_v2.add(scanFilter5);
 
                 ScanSettings setings = new ScanSettings.Builder()
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -288,27 +289,36 @@ public class MainActivity extends AppCompatActivity {
                 bluetoothLeScanner.stopScan(leScanCallback);
             }
         });
+
+        cancelTimers();
+
     }
 
     public void export() {
         //generate data
         StringBuilder data = new StringBuilder();
-        data.append("Time,Name,Addres,RSSI,distance");
+        data.append("Time,Rssi,MeanRssi,KalmanRssi,ArmaRssi,RealDistance");
 
 
-        for (RssiRecord record : Util.recordsList) {
-            data.append("\n" + record.getTimeReacord() + "," + record.getDeviceName() + "," + record.getDeviceAddress() + "," + String.valueOf(record.getRssiValue()) + "," + String.valueOf(record.getDistanceCalculated()));
+        for (FilterRecoard record : Util.filterRecoards) {
+            data.append("\n" + record.getTimeReacord() + "," +
+                    record.getUnfilteredRssi() + "," +
+                    record.getMeanRssi() + "," +
+                    record.getKalmanRssi() + "," +
+                    record.getArmaRssi() + "," +
+                    record.getRealDistance()
+            );
         }
 
         try {
             //saving the file into device
-            FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
+            FileOutputStream out = openFileOutput("filter_-8dB.csv", Context.MODE_PRIVATE);
             out.write((data.toString()).getBytes());
             out.close();
 
             //exporting
             Context context = getApplicationContext();
-            File filelocation = new File(getFilesDir(), "data.csv");
+            File filelocation = new File(getFilesDir(), "filter_-8dB.csv");
             Uri path = FileProvider.getUriForFile(context, "com.example.myapplication.fileprovider", filelocation);
             Intent fileIntent = new Intent(Intent.ACTION_SEND);
             fileIntent.setType("text/csv");
@@ -334,6 +344,22 @@ public class MainActivity extends AppCompatActivity {
             builder.setMessage("Please grant location access so this app can detect peripherals.");
             builder.setPositiveButton(android.R.string.ok, null);
             builder.show();
+        }
+    }
+
+    public void cancelTimers() {
+
+        if (this.timerView != null) {
+            this.timerView.cancel();
+        }
+        if (this.timerFilter != null) {
+            this.timerFilter.cancel();
+        }
+        if (this.timerTrim != null) {
+            this.timerTrim.cancel();
+        }
+        if (this.timerGetLocation != null) {
+            this.timerGetLocation.cancel();
         }
     }
 

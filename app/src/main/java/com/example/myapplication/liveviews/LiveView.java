@@ -1,23 +1,19 @@
-package com.example.myapplication.views;
+package com.example.myapplication.liveviews;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.example.myapplication.Beacons;
-import com.example.myapplication.R;
-import com.example.myapplication.Util;
+import com.example.myapplication.location.Multilateration;
+import com.example.myapplication.util.FilteredSignals;
+import com.example.myapplication.util.Util;
 import com.example.myapplication.model.Position;
-
-import java.util.Iterator;
 
 public class LiveView extends SurfaceView implements Runnable {
 
@@ -25,7 +21,7 @@ public class LiveView extends SurfaceView implements Runnable {
     private Context context;
 
     private long nextFrameTime;
-    private final long FPS = 10;
+    private final long FPS = 3;
     private final long MILLIS_PER_SECOND = 1000;
 
     private volatile boolean isPlaying;
@@ -33,7 +29,6 @@ public class LiveView extends SurfaceView implements Runnable {
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
     private Paint paint;
-    private Drawable flooriamge;
 
     public LiveView(Context context, Point size) {
         super(context);
@@ -96,35 +91,38 @@ public class LiveView extends SurfaceView implements Runnable {
                         paint);
             }
 
-            //####################  DRAW CURRENT POSITION  BASED MEAN RSSI VALUE ####################
-            paint.setColor(Color.argb(255, 255, 0, 0));
-            Position position = Util.calcutateBasedMeanRssi();
-            Point scalePositionNow = Util.convertFromCmToPixels(position.getLat(), position.getLng());
-
-            canvas.drawRect(scalePositionNow.x,
-                    (scalePositionNow.y),
-                    (scalePositionNow.x) + Util.BLOCK_SIZE,
-                    (scalePositionNow.y) + Util.BLOCK_SIZE,
-                    paint);
-
 
             //####################  DRAW CURRENT POSITION  ####################
             paint.setColor(Color.argb(255, 0, 255, 0));
-            Position position2 = Util.calcutateBasedNowRssi();
-            Point scalePositionNow2 = Util.convertFromCmToPixels(position2.getLat(), position2.getLng());
+            Position calcutateLocation = Multilateration.calcutateLocation(FilteredSignals.KALMAN);
+            Point scalePosition = Util.convertFromCmToPixels(calcutateLocation.getLat(), calcutateLocation.getLng());
 
-            canvas.drawRect(scalePositionNow2.x,
-                    (scalePositionNow2.y),
-                    (scalePositionNow2.x) + Util.BLOCK_SIZE,
-                    (scalePositionNow2.y) + Util.BLOCK_SIZE,
+            Log.i("TRILATERATION","x= "+ calcutateLocation.getLng()+ "  y= "+ calcutateLocation.getLng());
+            canvas.drawRect(scalePosition.x,
+                    (scalePosition.y),
+                    (scalePosition.x) + Util.BLOCK_SIZE,
+                    (scalePosition.y) + Util.BLOCK_SIZE,
                     paint);
 
-            int x = (int) position.getLat();
-            int y = (int) position.getLng();
+
+            //####################  DRAW CURRENT POSITION  BASED ON PREDICTED VALUE ####################
+            paint.setColor(Color.argb(255, 255, 0, 0));
+            Position predictPosition = Util.predictPosition;
+            Point scalePositionPredict = Util.convertFromCmToPixels(predictPosition.getLat(), predictPosition.getLng());
+
+            canvas.drawRect(scalePositionPredict.x,
+                    (scalePositionPredict.y),
+                    (scalePositionPredict.x) + Util.BLOCK_SIZE,
+                    (scalePositionPredict.y) + Util.BLOCK_SIZE,
+                    paint);
+
+            int x = (int) predictPosition.getLat();
+            int y = (int) predictPosition.getLng();
 
             paint.setColor(Color.BLACK);
+
             paint.setTextSize(30);
-            canvas.drawText("X:"+ x+ "  y:"+ y, (float) scalePositionNow.x, (float)scalePositionNow.y, paint);
+            canvas.drawText("X:"+ x+ "  y:"+ y, (float) scalePositionPredict.x, (float)scalePositionPredict.y, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }

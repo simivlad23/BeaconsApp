@@ -1,8 +1,6 @@
 
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
-e
-5app/src/main/java/com/example/myapplication/Util.java,f\c\fca2131a6b441e95a8f58827ab9a99cd267cdd98
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 ?
@@ -21,10 +19,6 @@ P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 m
 =app/src/main/java/com/example/myapplication/LivePosition.java,d\0\d02ac72f788abd68aa53e5c0520df8622b89696e
-w
-Gapp/src/main/java/com/example/myapplication/DataCollectingActivity.java,f\9\f9039f691f6e1a5ca7e9c13c42d4824cdaa8a5d9
-o
-?app/src/main/java/com/example/myapplication/views/LiveView.java,e\7\e75c42749f164df6b7e34e8898628aec84b02369
 q
 Aapp/src/main/java/com/example/myapplication/model/RssiRecord.java,a\f\afbf741460b805553f812d8651e7cfe6fc3aa982
 p

@@ -1,14 +1,14 @@
-package com.example.myapplication;
+package com.example.myapplication.util;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.os.CountDownTimer;
-import android.util.Log;
 import android.widget.Toast;
 
+import com.example.myapplication.Beacons;
 import com.example.myapplication.filter.ArmaFilter;
 import com.example.myapplication.filter.KalmanFilter;
 import com.example.myapplication.filter.MeanFilter;
+import com.example.myapplication.model.FilterRecoard;
 import com.example.myapplication.model.Position;
 import com.example.myapplication.model.RssiRecord;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,7 +34,7 @@ public class Util {
     private static final double RF_A = 23; // the absolute energy which is represent by dBm at a distance of 1 meter from the transmitter
     private static final double RF_N = 2.3; // n is the signal transmission constant
     public static final int TX_POWER = -61;
-    public static final long FIVE_SECOND_MILISECOND = 10000l;
+    public static final long FIVE_SECOND_MILISECOND = 5000l;
     public static final double MARGIN_UP = 20;
     public static final double MARGIN_LEFT = 20;
     public static int SCREEN_X = 1080;
@@ -60,6 +60,7 @@ public class Util {
     public static DecimalFormat df = new DecimalFormat("#.000");
     public static List<RssiRecord> recordsList = new ArrayList<>();
     public static List<Position> positionsList = new ArrayList<>();
+    public static List<FilterRecoard> filterRecoards = new ArrayList<>();
 
     public static List<Point> beaconsPosition = new ArrayList<>();
     public static List<Point> testPosition = new ArrayList<>();
@@ -67,53 +68,7 @@ public class Util {
     public static MeanFilter meanFilter = new MeanFilter();
     public static ArmaFilter armaFilter = new ArmaFilter();
 
-
-    public static double getDistance(double rssi, double txPower) {
-        return (Math.pow(10d, -((rssi + RF_A) / 10 * RF_N))) / 10.0;
-    }
-
-    public static double getDistance2(double rssi, int txPower) {
-        double distance = Math.pow(10d, ((double) txPower - rssi) / (10 * 2));
-        return distance;
-    }
-
-    public static double getDistance3(double rssi, int txPower) {
-
-        //hard coded power value. Usually ranges between -59 to -65
-        if (rssi == 0) {
-            return -1.0;
-        }
-
-        double ratio = rssi * 1.0 / txPower;
-        if (ratio < 1.0) {
-            double distance = Math.pow(ratio, 10);
-            return distance * 100;
-        } else {
-            double distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-            return distance * 100;
-        }
-    }
-
-    public static void makeCustomToast(String message, Context context) {
-        final Toast mToastToShow;
-        int toastDurationInMilliSeconds = 100;
-        mToastToShow = Toast.makeText(context, "Hello world, I am a toast.", Toast.LENGTH_LONG);
-
-        CountDownTimer toastCountDown;
-        toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000 /*Tick duration*/) {
-            public void onTick(long millisUntilFinished) {
-                mToastToShow.show();
-            }
-
-            public void onFinish() {
-                mToastToShow.cancel();
-            }
-        };
-
-        mToastToShow.show();
-        toastCountDown.start();
-
-    }
+    public static Position predictPosition = new Position(50,50);
 
     public static void makeTaost(String message, Context context) {
         Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
@@ -124,67 +79,6 @@ public class Util {
         long timeNow = System.currentTimeMillis();
         Date dateNow = new Date(timeNow);
         return dateNow;
-    }
-
-    public static Position calcutateBasedNowRssi() {
-
-        double[][] positions = new double[beaconsMap.size()][2];
-        double[] distances = new double[beaconsMap.size()];
-
-        int index = 0;
-
-        for (Beacons beacons : beaconsMap.values()) {
-
-            positions[index][0] = beacons.getLat();
-            positions[index][1] = beacons.getLng();
-
-            distances[index] = beacons.getDistanceFormula3();
-            index++;
-        }
-
-        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
-        LeastSquaresOptimizer.Optimum optimum = solver.solve();
-
-        // the answer
-        double[] calculatedPosition = optimum.getPoint().toArray();
-
-        //error and geometry information
-        RealVector standardDeviation = optimum.getSigma(0);
-        RealMatrix covarianceMatrix = optimum.getCovariances(0);
-
-        Log.i("NOW_POSITION", "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
-        return new Position(calculatedPosition[0], calculatedPosition[1]);
-
-    }
-
-    public static Position calcutateBasedMeanRssi() {
-
-        double[][] positions = new double[beaconsMap.size()][2];
-        double[] distances = new double[beaconsMap.size()];
-
-        int index = 0;
-
-        for (Beacons beacons : beaconsMap.values()) {
-
-            positions[index][0] = beacons.getLat();
-            positions[index][1] = beacons.getLng();
-
-            distances[index] = beacons.getDistanceAverage();
-            index++;
-        }
-
-        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
-        LeastSquaresOptimizer.Optimum optimum = solver.solve();
-
-        // the answer
-        double[] calculatedPosition = optimum.getPoint().toArray();
-
-        // error and geometry information
-        RealVector standardDeviation = optimum.getSigma(0);
-        RealMatrix covarianceMatrix = optimum.getCovariances(0);
-
-        Log.i("MEAN_POSITION", "x: " + calculatedPosition[0] + " " + "y: " + calculatedPosition[1]);
-        return new Position(calculatedPosition[0], calculatedPosition[1]);
     }
 
     public static void setBeaconsPosition() {
@@ -210,6 +104,10 @@ public class Util {
                 case "C8:26:E3:CE:42:5C":
                     beacons.setLat(210);
                     beacons.setLng(260);
+                    break;
+                case "DF:08:5C:3A:4B:81":
+                    beacons.setLat(250);
+                    beacons.setLng(300);
                     break;
             }
         }

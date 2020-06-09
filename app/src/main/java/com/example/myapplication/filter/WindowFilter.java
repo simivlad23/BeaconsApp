@@ -41,6 +41,7 @@ public abstract class WindowFilter implements RssiFilter {
 
     public List<AdvertisingPacket> getRecentAdvertisingPackets(Beacons beacon) {
         long now = System.currentTimeMillis();
+
         return beacon.getAdvertisingPacketsBetween(now - duration, now);
     }
 

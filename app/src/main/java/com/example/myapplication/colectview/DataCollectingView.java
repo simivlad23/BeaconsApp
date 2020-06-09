@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.example.myapplication.Util;
+import com.example.myapplication.util.Util;
 
 public class DataCollectingView extends SurfaceView implements Runnable {
 

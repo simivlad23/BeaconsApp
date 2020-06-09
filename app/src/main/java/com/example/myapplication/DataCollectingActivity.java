@@ -2,15 +2,14 @@ package com.example.myapplication;
 
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.colectview.DataCollectingView;
-import com.example.myapplication.model.FilterRssi;
-import com.example.myapplication.model.MLReacord;
+import com.example.myapplication.model.FilterRecoard;
+import com.example.myapplication.util.Util;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,8 +22,8 @@ public class DataCollectingActivity extends AppCompatActivity {
     ImageButton buttonLeft;
     ImageButton buttonRight;
     ImageButton buttonSend;
-    Timer timier2;
-    Timer timier;
+    boolean isCollecting = false;
+    Timer timerSendData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,52 +80,58 @@ public class DataCollectingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Util.makeTaost("Start Collecting", getApplicationContext());
+                if (isCollecting) {
+                    timerSendData.cancel();
+                    Util.makeTaost("Collecting was stopped", getApplicationContext());
+                    isCollecting = false;
+                } else {
 
-//                timier = new Timer();
-//                timier.scheduleAtFixedRate(new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        Point point = Util.convertFromPixelToCm(dataCollectingView.presOnScreenX, dataCollectingView.presOnScreeny);
-//                        MLReacord mlReacord = new MLReacord();
-//                        mlReacord.setTimeReacord(Util.convertFromEpochToDate());
-//                        mlReacord.setBeaconC7(Util.beaconsMap.get("C7:7E:A2:BD:51:4C").getAverageRssiValue());
-//                        mlReacord.setBeaconD2(Util.beaconsMap.get("D2:83:6A:5E:AB:F8").getAverageRssiValue());
-//                        mlReacord.setBeaconD1(Util.beaconsMap.get("D1:A4:D2:15:51:00").getAverageRssiValue());
-//                        mlReacord.setBeaconC0(Util.beaconsMap.get("C0:08:B4:0E:37:0E").getAverageRssiValue());
-//                        mlReacord.setX(point.x);
-//                        mlReacord.setY(point.y);
-//
-//                        //TODO Save
-//                        //TODO was stoped save to firestore
-//                        //Util.db.collection("rssi_beacon_2").add(mlReacord);
-//
-//                    }
-//                }, 0, 1500);
+                    Util.makeTaost("Start Collecting in 5 sec", getApplicationContext());
 
+                    isCollecting = true;
+                    timerSendData = new Timer();
+                    timerSendData.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            Point point = Util.convertFromPixelToCm(dataCollectingView.presOnScreenX, dataCollectingView.presOnScreeny);
+                            synchronized (Util.beaconsMap) {
+                                for (Beacons beacons : Util.beaconsMap.values()) {
+//                                    FilterRssi filterRssi = new FilterRssi(beacons.getRssiValue(),
+//                                            beacons.getMeanRssi(),
+//                                            beacons.getKalmanRssi(),
+//                                            beacons.getArmaRssi(),
+//                                            beacons.getRssiDist(),
+//                                            beacons.getMeanDist(),
+//                                            beacons.getKalmanDist(),
+//                                            beacons.getArmaDist(),
+//                                            beacons.getRssiDist2(),
+//                                            beacons.getMeanDist2(),
+//                                            beacons.getKalmanDist2(),
+//                                            beacons.getArmaDist2(),
+//                                            point.y);
 
-                //############### SAVE TO FIREBASE FILTER COMPORATION ##########
-                timier2 = new Timer();
-                timier2.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Point point = Util.convertFromPixelToCm(dataCollectingView.presOnScreenX, dataCollectingView.presOnScreeny);
-                        for(Beacons beacons: Util.beaconsMap.values())
-                        {
-                            FilterRssi filterRssi = new FilterRssi(beacons.getRssiValue(),
-                                                                    beacons.getMeanRssi(),
-                                                                    beacons.getKalmanRssi(),
-                                                                    beacons.getArmaRssi(),
-                                                                    beacons.getRssiDist(),
-                                                                    beacons.getMeanDist(),
-                                                                    beacons.getKalmanDist(),
-                                                                    beacons.getArmaDist(),
-                                                                    point.y);
-                                Util.db.collection("filter_comparation2").add(filterRssi);
+                                    FilterRecoard filterRssi;
+                                    synchronized (beacons) {
+                                        filterRssi = new FilterRecoard(beacons.getRssiValue(),
+                                                beacons.getMeanRssi(),
+                                                beacons.getKalmanRssi(),
+                                                beacons.getArmaRssi(),
+                                                point.y);
+                                    }
+
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            Util.makeTaost("Colect",getApplicationContext());
+                                        }
+                                    });
+
+                                    //Log.i("COLLECT", "Collecting: " + filterRssi);
+                                    Util.db.collection("filters_-0dB").add(filterRssi);
+                                }
+                            }
                         }
-                    }
-                }, 0, 1000);
-
+                    }, 5 * 1000, 2500);
+                }
             }
         });
     }
@@ -141,7 +146,9 @@ public class DataCollectingActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         //timier.cancel();
-        timier2.cancel();
+        if (timerSendData != null) {
+            timerSendData.cancel();
+        }
         dataCollectingView.pause();
 
     }
